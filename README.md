@@ -1,89 +1,92 @@
-# 📚 Shelfy - Modern Dijital Kütüphane Yönetimi
+# 📚 Shelfy - Modern Digital Library Management
 
-*Shelfy, kitap tutkunları için tasarlanmış, modern ve kullanıcı dostu bir kütüphane yönetim arayüzüdür. Kişisel kitap koleksiyonunuzu kategorize etmenize, okuma durumunuzu takip etmenize ve özel listeler oluşturmanıza olanak tanır.*
+*Shelfy is a modern and user-friendly library management interface designed for book enthusiasts. It allows you to categorize your personal book collection, track your reading status, and create custom lists.*
 ---
 📺 Demo
 ---
-*Shelfy, ``CustomTkinter``'ın modern gücünü kullanarak hem açık hem de koyu modda göz yormayan, zarif bir deneyim sunar:*
+*Shelfy offers a sleek, eye-pleasing experience in both light and dark modes, utilizing the modern power of ``CustomTkinter``:*
 <br>
 
 ---
-✨ Özellikler
+✨ Features
 ---
 
-- **Modern Kart Tasarımı:** Kitaplar, kapak resimleri ve temel bilgileriyle şık kartlar halinde sergilenir.
+- **Dynamic Language Support (i18n):** Newly added translation system allows you to easily switch between English and Turkish interfaces.
 
-- **Dinamik Filtreleme:** Kategori, alt kategori, stok durumu veya okuma durumuna (Okundu, Okunuyor, Okunacak) göre anlık filtreleme.
+- **Modern Card Design:** Books are displayed as stylish cards with their cover images and essential information.
 
-- **Özel Listeler (Custom Lists):** "E-kitaplarım" gibi tamamen size özel listeler oluşturma ve kitapları bu listelere atama.
+- **Dynamic Filtering:** Instant filtering by category, subcategory, stock status, or reading status (Read, Reading, To Read).
 
-- **Gelişmiş Arama:** Kitap adı, isbn veya yazar ismine göre anlık arama sonuçları.
+- **Custom Lists:** Create completely personalized lists like "My E-books" and assign books to these lists.
 
-- **JSON Tabanlı Veri Yönetimi:** Veritabanı kurulumu gerektirmeyen, taşınabilir ve hızlı veri saklama yapısı.
+- **Advanced Search:** Real-time search results by book title, ISBN, or author name.
 
-- **Koyu/Açık Tema:** Manuel değiştirilebilir modern arayüz.
+- **JSON-Based Data Management:** Portable and fast data storage structure that requires no database installation.
 
----
-🧬 Teknik Mimari
----
-*Uygulama, sürdürülebilir ve modüler bir yapıda üç temel katmandan oluşur:*
-
-- **UI Components:** ui_components.py içerisinde tanımlanan, CustomTkinter tabanlı özelleştirilmiş kartlar, diyalog pencereleri ve kenar çubuğu elemanları.
-
-- **Data Manager:** data_manager.py üzerinden yönetilen, JSON işlemlerini ve resim indirme (cover download) işlemlerini yürüten motor.
-
-- **Assets Manager:** Renk paletleri, ikon yönetimi ve favicon üretimini dinamik olarak yöneten merkezi sistem.
+- **Dark/Light Theme:** Manually toggleable modern interface.
 
 ---
-🛠️ Kurulum ve Kullanım
+🧬 Technical Architecture
 ---
- 
-- ***Standalone Executable (Önerilen)***
-<br>Python kurmanıza gerek kalmadan uygulamayı doğrudan çalıştırın:
+*The application consists of three main layers in a sustainable and modular structure:*
 
-    -  **[Releases Page](https://github.com/lemancaliskan/Shelfy-Dijital-Kutuphane-Yonetimi/releases/tag/v1.0)** sayfasına gidin.
-    - En son sürümdeki ``Shelfy.exe`` dosyasını indirin.
-    - Çift tıklayarak kütüphanenizi yönetmeye başlayın.
+- **UI Components:** CustomTkinter-based customized cards, dialog windows, and sidebar elements defined in ``ui_components.py``.
+
+- **Data Manager:** The engine managed via ``data_manager.py`` that handles JSON operations and cover image downloads.
+
+- **Assets Manager:** A centralized system that dynamically manages color palettes, icons, and favicon generation.
+
+---
+🛠️ Installation and Usage
+---
+- ***Standalone Executable (Recommended)***
+<br>Run the application directly without needing to install Python:
+
+
+     - Go to the **[Releases Page](https://github.com/lemancaliskan/Shelfy-Dijital-Kutuphane-Yonetimi/releases/tag/v1.0)**
+     - Download the ``Shelfy.exe`` file from the latest release.
+     - Double-click to start managing your library.
+       
     
-- ***Geliştiriciler İçin:***
-<br>Projeyi yerelinizde çalıştırmak veya katkıda bulunmak isterseniz:
+- ***For Developers:***
+<br>If you want to run the project locally or contribute:
 
 ```bash
-# Depoyu klonlayın
-git clone https://github.com/kullaniciadi/Shelfy.git
+# Clone the repository
+git clone https://github.com/lemancaliskan/Shelfy-Dijital-Kutuphane-Yonetimi.git
 
-# Proje dizinine gidin
-cd Shelfy
+# Go to the project directory
+cd Shelfy-Dijital-Kutuphane-Yonetimi
 
-# Gerekli kütüphaneleri yükleyin
+# Install required libraries
 pip install -r requirements.txt
 
-# Uygulamayı başlatın
+# Run the application
 python main.py
 ```
 
 ---
-📁 Proje Yapısı
+📁 Project Structure
 ---
 
 ```bash
 Shelfy/
-├── 📁 assets/                # Uygulama ikonları, logo
-├── 📁 data/                  # Yerel veri depolama
-│   ├── 📁 covers/            # Kitap kapak resimleri (.gitkeep ile korunur)
-│   └── 📄 library.json       # Kitap ve liste verilerinin tutulduğu ana dosya
-├── 📄 main.py                # Uygulamanın giriş noktası ve ana döngüsü
-├── 📄 data_manager.py        # Veri işleme ve JSON yönetim katmanı
-├── 📄 ui_components.py       # Arayüz elemanları ve özel widget'lar
-├── 📄 assets_manager.py      # Tema, renk ve varlık yönetimi
-├── 📜 requirements.txt       # Gerekli kütüphaneler
-└── ⚙️ .gitignore             # Git tarafından izlenmeyecek dosyalar
+├── 📁 assets/                # Application icons, logo
+├── 📁 data/                  # Local data storage
+│   ├── 📁 covers/            # Book cover images (protected by .gitkeep)
+│   └── 📄 library.json       # Main file holding book and list data
+├── 📄 main.py                # Application entry point and main loop
+├── 📄 data_manager.py        # Data processing and JSON management layer
+├── 📄 ui_components.py       # Interface elements and custom widgets
+├── 📄 assets_manager.py      # Theme, color, and asset management
+├── 📜 requirements.txt       # Required libraries
+└── ⚙️ .gitignore             # Files untracked by Git
 ```
 
 ---
-🤝 Katkıda Bulunma
+🤝 Contributing
 ---
-Projeyi geliştirmek için her türlü katkıya açığım!
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated!
 
 ```bash
 # Fork the Project
@@ -101,6 +104,6 @@ Projeyi geliştirmek için her türlü katkıya açığım!
 ```
 
 ---
-⚖️ Lisans
+⚖️ License
 ---
-Bu proje MIT Lisansı ile lisanslanmıştır. Detaylar için LICENSE dosyasına bakabilirsiniz.
+This project is licensed under the MIT License. See the ``LICENSE`` file for more details.
