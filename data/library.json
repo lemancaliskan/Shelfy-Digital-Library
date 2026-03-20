@@ -1,0 +1,168 @@
+{
+    "books": [
+        {
+            "id": "3328101c-4b32-41ac-8ccb-4da32bdd6e73",
+            "title": "Nutuk",
+            "author": "Mustafa Kemal Atatürk",
+            "isbn": "9789750820038",
+            "year": 2011,
+            "publisher": "Yapı Kredi Yayınları",
+            "category": "Tarih",
+            "owned": true,
+            "reading_status": "read",
+            "cover": "data\\covers\\3328101c-4b32-41ac-8ccb-4da32bdd6e73.png",
+            "lists": []
+        },
+        {
+            "id": "6d8dddda-e5d4-42d0-8501-c74a62ce7c18",
+            "title": "Nutuk - Gençler İçin Fotoğraflarla",
+            "author": "Mustafa Kemal Atatürk",
+            "isbn": "9789944888349",
+            "year": 2010,
+            "publisher": "İş Bankası Kültür Yayınları",
+            "category": "Tarih",
+            "owned": true,
+            "reading_status": "read",
+            "cover": "data\\covers\\6d8dddda-e5d4-42d0-8501-c74a62ce7c18.jpg",
+            "lists": []
+        },
+        {
+            "id": "838b5efd-26ad-4e88-a042-59979fc14d55",
+            "title": "Devlet-i Aliyye - Osmanlı İmparatorluğu Üzerine Araştırmalar 1",
+            "author": "Halil İnalcık",
+            "isbn": "9789944886451",
+            "year": "2009",
+            "publisher": "İş Bankası Kültür Yayınları",
+            "category": "Tarih",
+            "owned": false,
+            "reading_status": "read",
+            "cover": "data\\covers\\838b5efd-26ad-4e88-a042-59979fc14d55.jpg",
+            "lists": [],
+            "subcategory": ""
+        },
+        {
+            "id": "53ed4e4a-9e4e-4d78-aa5e-aad7a5784c39",
+            "title": "Gazi Mustafa Kemal Atatürk",
+            "author": "İlber Ortaylı",
+            "isbn": "9789752430297",
+            "year": "2018",
+            "publisher": "Kronik Kitap",
+            "category": "Tarih",
+            "owned": true,
+            "reading_status": "read",
+            "cover": "data\\covers\\53ed4e4a-9e4e-4d78-aa5e-aad7a5784c39.jpg",
+            "lists": []
+        },
+        {
+            "id": "b0dcf428-bc6a-4cf0-b65b-7c058a5d3301",
+            "title": "Siyasal Tarih",
+            "author": "Toktamış Ateş",
+            "isbn": "9789756857991",
+            "year": 2018,
+            "publisher": "İstanbul Bilgi Üniversitesi Yayınları",
+            "category": "Tarih",
+            "owned": true,
+            "reading_status": "read",
+            "cover": "data\\covers\\b0dcf428-bc6a-4cf0-b65b-7c058a5d3301.png",
+            "lists": []
+        },
+        {
+            "id": "356d4ae3-d7cf-452d-b839-386b33a46dfc",
+            "title": "Çalıkuşu",
+            "author": "Reşat Nuri Güntekin",
+            "isbn": "9789751047236",
+            "year": "2024",
+            "publisher": "İnkılap Kitabevi",
+            "category": "Roman",
+            "owned": true,
+            "reading_status": "read",
+            "cover": "data\\covers\\356d4ae3-d7cf-452d-b839-386b33a46dfc.jpg",
+            "lists": [],
+            "subcategory": "Türk Edebiyatı"
+        },
+        {
+            "id": "3c0a7cb0-814e-4966-911a-f74852b384c3",
+            "title": "Acımak",
+            "author": "Reşat Nuri Güntekin",
+            "isbn": "9789751047373",
+            "year": "2024",
+            "publisher": "İnkılap Kitabevi",
+            "category": "Roman",
+            "subcategory": "",
+            "owned": false,
+            "reading_status": "unread",
+            "cover": "data\\covers\\3c0a7cb0-814e-4966-911a-f74852b384c3.jpg",
+            "lists": [
+                "E-Kitaplar"
+            ]
+        },
+        {
+            "id": "2c9050b5-5b25-4264-8408-588499eaa95d",
+            "title": "Anna Karenina",
+            "author": "Lev Nikolayeviç Tolstoy",
+            "isbn": "9786053604099",
+            "year": 2011,
+            "publisher": "İş Bankası Kültür Yayınları",
+            "category": "Roman",
+            "subcategory": "Rus Edebiyatı",
+            "owned": false,
+            "reading_status": "unread",
+            "cover": "data\\covers\\2c9050b5-5b25-4264-8408-588499eaa95d.jpg",
+            "lists": [
+                "Hasan Ali Yücel Klasikleri"
+            ]
+        },
+        {
+            "id": "96659e16-ed16-4db3-a7bc-ca091a153d8c",
+            "title": "Beyaz Zambaklar Ülkesinde",
+            "author": "Grigory Petrov",
+            "isbn": "9789944983990",
+            "year": 2007,
+            "publisher": "Koridor Yayıncılık",
+            "category": "Roman",
+            "subcategory": "Dünya Klasik",
+            "owned": false,
+            "reading_status": "unread",
+            "cover": "data\\covers\\96659e16-ed16-4db3-a7bc-ca091a153d8c.jpg",
+            "lists": []
+        },
+        {
+            "id": "258eae6f-d513-4ed6-be7a-495a2c66137c",
+            "title": "Devlet",
+            "author": "Platon",
+            "isbn": "9789754587173",
+            "year": "2006",
+            "publisher": "İş Bankası Kültür Yayınları",
+            "category": "Felsefe",
+            "subcategory": "",
+            "owned": false,
+            "reading_status": "in_progress",
+            "cover": "data\\covers\\258eae6f-d513-4ed6-be7a-495a2c66137c.jpg",
+            "lists": [
+                "Hasan Ali Yücel Klasikleri"
+            ]
+        },
+        {
+            "id": "d1654ec2-c7c6-4a40-bc26-6bca3e979d43",
+            "title": "İnsan Neyle Yaşar?",
+            "author": "Lev Nikolayeviç Tolstoy",
+            "isbn": "9786053607038",
+            "year": 2012,
+            "publisher": "İş Bankası Kültür Yayınları",
+            "category": "Roman",
+            "subcategory": "Rus Edebiyatı",
+            "owned": false,
+            "reading_status": "read",
+            "cover": "data\\covers\\d1654ec2-c7c6-4a40-bc26-6bca3e979d43.jpg",
+            "lists": [
+                "Hasan Ali Yücel Klasikleri"
+            ]
+        }
+    ],
+    "categories": [],
+    "authors": [],
+    "custom_lists": [
+        "E-Kitaplar",
+        "Hasan Ali Yücel Klasikleri"
+    ]
+}
