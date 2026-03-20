@@ -9,6 +9,7 @@ from assets_manager import LOCAL_CARD_BG, LOCAL_SIDEBAR_BG, CAT_COLORS
 from assets_manager import SIDEBAR_WIDTH, CARD_WIDTH, CARD_HEIGHT, COVER_WIDTH, COVER_HEIGHT
 from assets_manager import DIALOG_WIDTH, DIALOG_HEIGHT, DIALOG_PADX, ADD_LIST_DIALOG_HEIGHT
 from assets_manager import FIXED_BUTTON_WIDTH, BUTTON_HEIGHT, SEARCH_BOX_WIDTH
+from translations import get_text
 
 
 def show_context_menu(event):
@@ -16,11 +17,11 @@ def show_context_menu(event):
 
     widget = event.widget
 
-    menu.add_command(label="Kes", command=lambda: widget.event_generate("<<Cut>>"))
-    menu.add_command(label="Kopyala", command=lambda: widget.event_generate("<<Copy>>"))
-    menu.add_command(label="Yapıştır", command=lambda: widget.event_generate("<<Paste>>"))
+    menu.add_command(label=get_text("cut"), command=lambda: widget.event_generate("<<Cut>>"))
+    menu.add_command(label=get_text("copy"), command=lambda: widget.event_generate("<<Copy>>"))
+    menu.add_command(label=get_text("paste"), command=lambda: widget.event_generate("<<Paste>>"))
     menu.add_separator()
-    menu.add_command(label="Tümünü Seç", command=lambda: widget.event_generate("<<SelectAll>>"))
+    menu.add_command(label=get_text("select_all"), command=lambda: widget.event_generate("<<SelectAll>>"))
     menu.tk_popup(event.x_root, event.y_root)
 
 # =======================
@@ -32,7 +33,7 @@ class AddListDialog(ctk.CTkToplevel):
         self.master = master
         self.on_save_callback = on_save_callback
         self.transient(master)
-        self.title("Yeni Liste Oluştur")
+        self.title(get_text("new_list_title"))
 
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -54,9 +55,9 @@ class AddListDialog(ctk.CTkToplevel):
         content_frame.columnconfigure(0, weight=1)
         content_frame.rowconfigure(0, weight=1)
 
-        ctk.CTkLabel(content_frame, text="Liste Adı", font=ctk.CTkFont(size=14, weight="bold"),
+        ctk.CTkLabel(content_frame, text=get_text("list_name"), font=ctk.CTkFont(size=14, weight="bold"),
                      text_color=TEXT_COLOR).grid(row=0, column=0, padx=DIALOG_PADX, pady=(15, 0), sticky="w")
-        self.list_name_entry = ctk.CTkEntry(content_frame, placeholder_text="Örn: Favorilerim",
+        self.list_name_entry = ctk.CTkEntry(content_frame, placeholder_text=get_text("ex_favorites"),
                                             fg_color=LOCAL_CARD_BG, border_color=PRIMARY_COLOR,
                                             border_width=1, corner_radius=12, height=40)
         self.list_name_entry.grid(row=1, column=0, padx=DIALOG_PADX, pady=(3, 15), sticky="ew")
@@ -66,20 +67,20 @@ class AddListDialog(ctk.CTkToplevel):
         button_frame.columnconfigure(0, weight=1)
         button_frame.columnconfigure(1, weight=1)
 
-        ctk.CTkButton(button_frame, text="İptal", command=self.destroy,
+        ctk.CTkButton(button_frame, text=get_text("cancel"), command=self.destroy,
                       fg_color=LOCAL_CARD_BG, text_color=TEXT_COLOR, hover_color=ACCENT_COLOR,
                       corner_radius=12, height=40, border_color=PRIMARY_COLOR, border_width=1).grid(row=0, column=0,
                                                                                                     padx=(0, 10),
                                                                                                     sticky="ew")
 
-        ctk.CTkButton(button_frame, text="Oluştur", command=self._save_list,
+        ctk.CTkButton(button_frame, text=get_text("create"), command=self._save_list,
                       fg_color=PRIMARY_COLOR, hover_color=ACCENT_COLOR,
                       corner_radius=12, height=40).grid(row=0, column=1, padx=(10, 0), sticky="ew")
 
     def _save_list(self):
         list_name = self.list_name_entry.get().strip()
         if not list_name:
-            messagebox.showerror("Hata", "Liste Adı boş bırakılamaz.", parent=self)
+            messagebox.showerror(get_text("error"), get_text("empty_list_name"), parent=self)
             return
         self.on_save_callback(list_name)
         self.destroy()
@@ -109,8 +110,8 @@ class Sidebar(ctk.CTkScrollableFrame):
         self.on_add_list = on_add_list
         self.on_delete_list = on_delete_list
 
-        self.category_status = ctk.StringVar(value=getattr(self.master, 'current_category', "Tümü"))
-        self.subcategory_status = ctk.StringVar(value=getattr(self.master, 'current_subcategory', "Tümü"))
+        self.category_status = ctk.StringVar(value=getattr(self.master, 'current_category', get_text("all")))
+        self.subcategory_status = ctk.StringVar(value=getattr(self.master, 'current_subcategory', get_text("all")))
         self.list_status = ctk.StringVar(value=getattr(self.master, 'current_list_type', "all_list"))
         self.reading_status = ctk.StringVar(value="all")
         self.stock_status = ctk.StringVar(value="all")
@@ -128,7 +129,7 @@ class Sidebar(ctk.CTkScrollableFrame):
 
         ctk.CTkLabel(
             search_header_frame,
-            text="ARA",
+            text=get_text("search"),
             font=ctk.CTkFont(size=12, weight="bold"),
             text_color=ACCENT_COLOR
         ).grid(row=0, column=0, sticky="w")
@@ -149,7 +150,7 @@ class Sidebar(ctk.CTkScrollableFrame):
 
         self.search_entry = ctk.CTkEntry(
             self,
-            placeholder_text="Kitap ara...",
+            placeholder_text=get_text("search_placeholder"),
             fg_color=BG_COLOR,
             border_color=PRIMARY_COLOR,
             border_width=1,
@@ -163,7 +164,7 @@ class Sidebar(ctk.CTkScrollableFrame):
         self.search_entry.bind('<KeyRelease>', lambda event: on_search_change(self.search_entry.get()))
 
         # CATEGORIES #
-        ctk.CTkLabel(self, text="KATEGORİLER", font=ctk.CTkFont(size=12, weight="bold"),
+        ctk.CTkLabel(self, text=get_text("categories"), font=ctk.CTkFont(size=12, weight="bold"),
                      text_color=ACCENT_COLOR).grid(row=row_idx, column=0, padx=20, pady=(15, 5), sticky="w")
         row_idx += 1
 
@@ -175,7 +176,7 @@ class Sidebar(ctk.CTkScrollableFrame):
         self._create_category_combo()
 
         # SUBCATEGORIES #
-        self.subcat_label = ctk.CTkLabel(self, text="ALT KATEGORİLER", font=ctk.CTkFont(size=12, weight="bold"),
+        self.subcat_label = ctk.CTkLabel(self, text=get_text("subcategories"), font=ctk.CTkFont(size=12, weight="bold"),
                                          text_color=ACCENT_COLOR)
         self.subcat_label.grid(row=row_idx, column=0, padx=20, pady=(15, 5), sticky="w")
         row_idx += 1
@@ -193,7 +194,7 @@ class Sidebar(ctk.CTkScrollableFrame):
         list_header_frame.columnconfigure(0, weight=1)
         row_idx += 1
 
-        ctk.CTkLabel(list_header_frame, text="LİSTELERİM", font=ctk.CTkFont(size=12, weight="bold"),
+        ctk.CTkLabel(list_header_frame, text=get_text("my_lists"), font=ctk.CTkFont(size=12, weight="bold"),
                      text_color=ACCENT_COLOR).grid(row=0, column=0, sticky="w")
 
         self.delete_list_btn = ctk.CTkButton(
@@ -231,7 +232,7 @@ class Sidebar(ctk.CTkScrollableFrame):
         self._create_list_combo()
 
         # READING STATUS #
-        ctk.CTkLabel(self, text="OKUMA DURUMU", font=ctk.CTkFont(size=12, weight="bold"),
+        ctk.CTkLabel(self, text=get_text("reading_status"), font=ctk.CTkFont(size=12, weight="bold"),
                      text_color=ACCENT_COLOR).grid(row=row_idx, column=0, padx=20, pady=(15, 5), sticky="w")
         row_idx += 1
 
@@ -240,31 +241,31 @@ class Sidebar(ctk.CTkScrollableFrame):
         row_idx += 1
         self.reading_filter_frame.columnconfigure((0, 1, 2), weight=1)
 
-        self.btn_reading_all = self._create_filter_button(self.reading_filter_frame, "Tümü", "all", self.reading_status,
+        self.btn_reading_all = self._create_filter_button(self.reading_filter_frame, get_text("all"), "all", self.reading_status,
                                                           lambda value: on_filter_change(reading=value),
                                                           self.reading_buttons)
         self.btn_reading_all.grid(row=0, column=0, padx=5, pady=5, sticky="n")
 
-        self.btn_reading_read = self._create_filter_button(self.reading_filter_frame, "Okundu", "read",
+        self.btn_reading_read = self._create_filter_button(self.reading_filter_frame, get_text("read"), "read",
                                                            self.reading_status,
                                                            lambda value: on_filter_change(reading=value),
                                                            self.reading_buttons)
         self.btn_reading_read.grid(row=0, column=1, padx=5, pady=5, sticky="n")
 
-        self.btn_reading_inprogress = self._create_filter_button(self.reading_filter_frame, "Okunuyor", "in_progress",
+        self.btn_reading_inprogress = self._create_filter_button(self.reading_filter_frame, get_text("in_progress"), "in_progress",
                                                                  self.reading_status,
                                                                  lambda value: on_filter_change(reading=value),
                                                                  self.reading_buttons)
         self.btn_reading_inprogress.grid(row=0, column=2, padx=5, pady=5, sticky="n")
 
-        self.btn_reading_unread = self._create_filter_button(self.reading_filter_frame, "Okunacak", "unread",
+        self.btn_reading_unread = self._create_filter_button(self.reading_filter_frame, get_text("unread"), "unread",
                                                              self.reading_status,
                                                              lambda value: on_filter_change(reading=value),
                                                              self.reading_buttons)
         self.btn_reading_unread.grid(row=1, column=0, padx=5, pady=5, sticky="n")
 
         # STOCK STATUS #
-        ctk.CTkLabel(self, text="STOK DURUMU", font=ctk.CTkFont(size=12, weight="bold"),
+        ctk.CTkLabel(self, text=get_text("stock_status"), font=ctk.CTkFont(size=12, weight="bold"),
                      text_color=ACCENT_COLOR).grid(row=row_idx, column=0, padx=20, pady=(15, 5), sticky="w")
         row_idx += 1
 
@@ -273,17 +274,17 @@ class Sidebar(ctk.CTkScrollableFrame):
         row_idx += 1
         self.stock_filter_frame.columnconfigure((0, 1, 2), weight=1)
 
-        self.btn_stock_all = self._create_filter_button(self.stock_filter_frame, "Tümü", "all", self.stock_status,
+        self.btn_stock_all = self._create_filter_button(self.stock_filter_frame, get_text("all"), "all", self.stock_status,
                                                         lambda value: on_filter_change(stock=value), self.stock_buttons)
         self.btn_stock_all.grid(row=0, column=0, padx=5, pady=5, sticky="n")
 
-        self.btn_stock_available = self._create_filter_button(self.stock_filter_frame, "Elimde", "available",
+        self.btn_stock_available = self._create_filter_button(self.stock_filter_frame, get_text("available"), "available",
                                                               self.stock_status,
                                                               lambda value: on_filter_change(stock=value),
                                                               self.stock_buttons)
         self.btn_stock_available.grid(row=0, column=1, padx=5, pady=5, sticky="n")
 
-        self.btn_stock_borrowed = self._create_filter_button(self.stock_filter_frame, "Ödünç Verildi", "borrowed",
+        self.btn_stock_borrowed = self._create_filter_button(self.stock_filter_frame, get_text("borrowed"), "borrowed",
                                                              self.stock_status,
                                                              lambda value: on_filter_change(stock=value),
                                                              self.stock_buttons)
@@ -306,7 +307,7 @@ class Sidebar(ctk.CTkScrollableFrame):
 
         self.total_label = ctk.CTkLabel(
             text_f,
-            text="Toplam Kitap",
+            text=get_text("total_books"),
             text_color="#E0E0E0",
             font=ctk.CTkFont(size=14)
         )
@@ -324,7 +325,7 @@ class Sidebar(ctk.CTkScrollableFrame):
 
     def _toggle_subcategory_visibility(self):
         current_cat = self.category_status.get()
-        if current_cat == "Tümü" or current_cat == "":
+        if current_cat == get_text("all") or current_cat == "":
             self.subcat_label.grid_remove()
             self.subcategory_frame.grid_remove()
         else:
@@ -337,7 +338,8 @@ class Sidebar(ctk.CTkScrollableFrame):
         for widget in self.category_frame.winfo_children():
             widget.destroy()
 
-        categories_list = ["Tümü"] + [c for c in self.categories if c != "Tümü"]
+        all_text = get_text("all")
+        categories_list = [all_text] + [c for c in self.categories if c != all_text]
 
         self.category_combo = ctk.CTkComboBox(
             self.category_frame,
@@ -364,7 +366,8 @@ class Sidebar(ctk.CTkScrollableFrame):
         for widget in self.subcategory_frame.winfo_children():
             widget.destroy()
 
-        subcats_list = ["Tümü"] + [c for c in self.subcategories if c != "Tümü"]
+        all_text = get_text("all")
+        subcats_list = [all_text] + [c for c in self.subcategories if c != all_text]
 
         self.subcategory_combo = ctk.CTkComboBox(
             self.subcategory_frame,
@@ -391,14 +394,14 @@ class Sidebar(ctk.CTkScrollableFrame):
         for widget in self.list_frame.winfo_children():
             widget.destroy()
 
-        self.list_options = ["📚 Tüm Kitaplar", "⭐ Favorilerim"]
+        self.list_options = [get_text("all_books"), get_text("favorites")]
         self.list_options.extend(self.custom_lists)
 
         current_val = getattr(self.master, 'current_list_type', "all_list")
         if current_val == "all_list":
-            self.list_status.set("📚 Tüm Kitaplar")
+            self.list_status.set(get_text("all_books"))
         elif current_val == "favorites":
-            self.list_status.set("⭐ Favorilerim")
+            self.list_status.set(get_text("favorites"))
         else:
             self.list_status.set(current_val)
 
@@ -423,16 +426,16 @@ class Sidebar(ctk.CTkScrollableFrame):
         )
         self.list_combo.pack(padx=5, pady=5, fill="x")
 
-        if self.list_status.get() not in ["📚 Tüm Kitaplar", "⭐ Favorilerim"]:
+        if self.list_status.get() not in [get_text("all_books"), get_text("favorites")]:
             self.delete_list_btn.grid()
         else:
             self.delete_list_btn.grid_remove()
 
     def _on_list_combo_change(self, choice):
-        if choice == "📚 Tüm Kitaplar":
+        if choice == get_text("all_books"):
             self.on_filter_change(list_type="all_list")
             self.delete_list_btn.grid_remove()
-        elif choice == "⭐ Favorilerim":
+        elif choice == get_text("favorites"):
             self.on_filter_change(list_type="favorites")
             self.delete_list_btn.grid_remove()
         else:
@@ -442,32 +445,34 @@ class Sidebar(ctk.CTkScrollableFrame):
     def _delete_selected_list(self):
         selected = self.list_status.get()
 
-        if selected in ["📚 Tüm Kitaplar", "⭐ Favorilerim"]:
-            messagebox.showwarning("Uyarı", f"'{selected}' listesi sistem listesidir ve silinemez!")
+        if selected in [get_text("all_books"), get_text("favorites")]:
+            messagebox.showwarning(get_text("warning"), get_text("list_system_error", selected=selected))
             return
 
-        if messagebox.askyesno("Liste Silme", f"'{selected}' listesini silmek istediğinizden emin misiniz?"):
+        if messagebox.askyesno(get_text("list_delete"), get_text("list_delete_confirm", selected=selected)):
             self.on_delete_list(selected)
-            self.list_status.set("📚 Tüm Kitaplar")
+            self.list_status.set(get_text("all_books"))
 
             if hasattr(self, 'delete_list_btn'):
                 self.delete_list_btn.grid_remove()
 
     def update_categories(self, new_categories):
         self.categories = new_categories
-        categories_list = ["Tümü"] + [c for c in self.categories if c != "Tümü"]
+        all_text = get_text("all")
+        categories_list = [all_text] + [c for c in self.categories if c != all_text]
         self.category_combo.configure(values=categories_list)
 
     def update_subcategories(self, new_subcategories):
         self.subcategories = new_subcategories
-        subcats_list = ["Tümü"] + [c for c in self.subcategories if c != "Tümü"]
+        all_text = get_text("all")
+        subcats_list = [all_text] + [c for c in self.subcategories if c != all_text]
         if hasattr(self, 'subcategory_combo'):
             self.subcategory_combo.configure(values=subcats_list)
         self._toggle_subcategory_visibility()
 
     def update_lists(self, new_custom_lists):
         self.custom_lists = new_custom_lists
-        self.list_options = ["📚 Tüm Kitaplar", "⭐ Favorilerim"]
+        self.list_options = [get_text("all_books"), get_text("favorites")]
         self.list_options.extend(self.custom_lists)
         self.list_combo.configure(values=self.list_options)
 
@@ -531,7 +536,7 @@ class AddBookDialog(ctk.CTkToplevel):
         self.on_save_callback = on_save_callback
         self.cat_dict = cat_dict
         self.transient(master)
-        self.title("Yeni Kitap Ekle")
+        self.title(get_text("add_new_book"))
 
         self.reading_status_var = ctk.StringVar(value="unread")
         self.stock_status_var = ctk.StringVar(value="available")
@@ -604,29 +609,30 @@ class AddBookDialog(ctk.CTkToplevel):
     def _create_input_fields(self):
         row_idx = 0
 
-        self._create_label(self.scroll_frame, "Kitap Adı *", row_idx)
+        self._create_label(self.scroll_frame, get_text("book_name_req"), row_idx)
         row_idx += 1
-        self.title_entry = self._create_entry(self.scroll_frame, "Örn: 1984", row_idx)
-        row_idx += 1
-
-        self._create_label(self.scroll_frame, "Yazar *", row_idx)
-        row_idx += 1
-        self.author_entry = self._create_entry(self.scroll_frame, "Örn: George Orwell", row_idx)
+        self.title_entry = self._create_entry(self.scroll_frame, get_text("ex_1984"), row_idx)
         row_idx += 1
 
-        self._create_label(self.scroll_frame, "Yayınevi *", row_idx)
+        self._create_label(self.scroll_frame, get_text("author_req"), row_idx)
         row_idx += 1
-        self.publisher_entry = self._create_entry(self.scroll_frame, "Örn: Can Yayınları", row_idx)
-        row_idx += 1
-
-        self._create_label(self.scroll_frame, "ISBN * (13 Haneli)", row_idx)
-        row_idx += 1
-        self.isbn_entry = self._create_entry(self.scroll_frame, "Örn: 9781234567890", row_idx)
+        self.author_entry = self._create_entry(self.scroll_frame, get_text("ex_orwell"), row_idx)
         row_idx += 1
 
-        self._create_label(self.scroll_frame, "Kategori * (Seç/Yaz)", row_idx)
+        self._create_label(self.scroll_frame, get_text("publisher_req"), row_idx)
         row_idx += 1
-        filtered_cats = [c for c in self.cat_dict.keys() if c != "Tümü"]
+        self.publisher_entry = self._create_entry(self.scroll_frame, get_text("ex_can"), row_idx)
+        row_idx += 1
+
+        self._create_label(self.scroll_frame, get_text("isbn_req"), row_idx)
+        row_idx += 1
+        self.isbn_entry = self._create_entry(self.scroll_frame, get_text("ex_isbn"), row_idx)
+        row_idx += 1
+
+        self._create_label(self.scroll_frame, get_text("category_req"), row_idx)
+        row_idx += 1
+        all_text = get_text("all")
+        filtered_cats = [c for c in self.cat_dict.keys() if c != all_text]
         self.category_combo = ctk.CTkComboBox(
             self.scroll_frame, values=filtered_cats, fg_color=LOCAL_CARD_BG,
             text_color=TEXT_COLOR, border_color=PRIMARY_COLOR, border_width=1,
@@ -637,7 +643,7 @@ class AddBookDialog(ctk.CTkToplevel):
         self.category_combo.grid(row=row_idx, column=0, padx=DIALOG_PADX, pady=(3, 8), sticky="ew")
         row_idx += 1
 
-        self._create_label(self.scroll_frame, "Alt Kategori (Seç/Yaz)", row_idx)
+        self._create_label(self.scroll_frame, get_text("subcategory_opt"), row_idx)
         row_idx += 1
         self.subcategory_combo = ctk.CTkComboBox(
             self.scroll_frame, values=[], fg_color=LOCAL_CARD_BG,
@@ -651,39 +657,39 @@ class AddBookDialog(ctk.CTkToplevel):
         self.category_combo.set("")
         self.subcategory_combo.set("")
 
-        self._create_label(self.scroll_frame, "Basım Yılı", row_idx)
+        self._create_label(self.scroll_frame, get_text("pub_year"), row_idx)
         row_idx += 1
-        self.year_entry = self._create_entry(self.scroll_frame, "Örn: 2025", row_idx)
+        self.year_entry = self._create_entry(self.scroll_frame, get_text("ex_year"), row_idx)
         row_idx += 1
 
-        self._create_label(self.scroll_frame, "Okuma Durumu *", row_idx)
+        self._create_label(self.scroll_frame, get_text("reading_status_req"), row_idx)
         row_idx += 1
-        reading_options = [("Okunacak", "unread"), ("Okunuyor", "in_progress"), ("Okundu", "read")]
+        reading_options = [(get_text("unread"), "unread"), (get_text("in_progress"), "in_progress"), (get_text("read"), "read")]
         self.reading_button_frame = self._create_toggle_buttons(self.scroll_frame, reading_options,
                                                                 self.reading_status_var, FIXED_BUTTON_WIDTH)
         self.reading_button_frame.grid(row=row_idx, column=0, padx=DIALOG_PADX, pady=(3, 8), sticky="ew")
         row_idx += 1
 
-        self._create_label(self.scroll_frame, "Stok Durumu *", row_idx)
+        self._create_label(self.scroll_frame, get_text("stock_status_req"), row_idx)
         row_idx += 1
-        stock_options = [("Elimde", "available"), ("Ödünç Verildi", "borrowed")]
+        stock_options = [(get_text("available"), "available"), (get_text("borrowed"), "borrowed")]
         self.stock_button_frame = self._create_toggle_buttons(self.scroll_frame, stock_options, self.stock_status_var,
                                                               FIXED_BUTTON_WIDTH)
         self.stock_button_frame.grid(row=row_idx, column=0, padx=DIALOG_PADX, pady=(3, 8), sticky="ew")
         row_idx += 1
 
-        self._create_label(self.scroll_frame, "Kapak Resmi (URL veya Dosya Yolu)", row_idx)
+        self._create_label(self.scroll_frame, get_text("cover_image"), row_idx)
         row_idx += 1
         path_frame = ctk.CTkFrame(self.scroll_frame, fg_color="transparent")
         path_frame.grid(row=row_idx, column=0, padx=DIALOG_PADX, pady=(3, 15), sticky="ew")
         path_frame.columnconfigure(0, weight=1)
 
-        self.cover_path_entry = ctk.CTkEntry(path_frame, placeholder_text="http://... veya Dosya seçin",
+        self.cover_path_entry = ctk.CTkEntry(path_frame, placeholder_text=get_text("cover_placeholder"),
                                              fg_color=LOCAL_CARD_BG, border_color=PRIMARY_COLOR,
                                              border_width=1, corner_radius=12, height=40)
         self.cover_path_entry.grid(row=0, column=0, sticky="ew", padx=(0, 10))
 
-        self.browse_button = ctk.CTkButton(path_frame, text="Gözat", command=self._select_cover_path,
+        self.browse_button = ctk.CTkButton(path_frame, text=get_text("browse"), command=self._select_cover_path,
                                            fg_color=PRIMARY_COLOR, hover_color=ACCENT_COLOR, corner_radius=12,
                                            height=40, width=80)
         self.browse_button.grid(row=0, column=1, sticky="e")
@@ -695,17 +701,18 @@ class AddBookDialog(ctk.CTkToplevel):
         button_frame.columnconfigure(0, weight=1)
         button_frame.columnconfigure(1, weight=1)
 
-        ctk.CTkButton(button_frame, text="İptal", command=self.destroy, fg_color=LOCAL_CARD_BG, text_color=TEXT_COLOR,
+        ctk.CTkButton(button_frame, text=get_text("cancel"), command=self.destroy, fg_color=LOCAL_CARD_BG, text_color=TEXT_COLOR,
                       hover_color=ACCENT_COLOR, corner_radius=12, height=40, border_color=PRIMARY_COLOR,
                       border_width=1).grid(row=0, column=0, padx=(0, 10), sticky="ew")
 
-        ctk.CTkButton(button_frame, text="Ekle", command=self._save_book, fg_color=PRIMARY_COLOR,
+        ctk.CTkButton(button_frame, text=get_text("add"), command=self._save_book, fg_color=PRIMARY_COLOR,
                       hover_color=ACCENT_COLOR, corner_radius=12, height=40).grid(row=0, column=1, padx=(10, 0),
                                                                                   sticky="ew")
 
     def _on_category_change(self, choice):
         subcats = self.cat_dict.get(choice, [])
-        filtered_subcats = [sc for sc in subcats if sc != "Tümü" and sc != ""]
+        all_text = get_text("all")
+        filtered_subcats = [sc for sc in subcats if sc != all_text and sc != ""]
         self.subcategory_combo.configure(values=filtered_subcats)
         if filtered_subcats:
             self.subcategory_combo.set(filtered_subcats[0])
@@ -713,9 +720,9 @@ class AddBookDialog(ctk.CTkToplevel):
             self.subcategory_combo.set("")
 
     def _select_cover_path(self):
-        file_path = filedialog.askopenfilename(title="Kapak Resmi Seç",
+        file_path = filedialog.askopenfilename(title=get_text("select_cover"),
                                                filetypes=[
-                                                   ("Görsel Dosyaları", "*.png *.jpg *.jpeg *.bmp *.webp *.gif")])
+                                                   (get_text("image_files"), "*.png *.jpg *.jpeg *.bmp *.webp *.gif")])
         if file_path:
             self.cover_path_entry.delete(0, tk.END)
             self.cover_path_entry.insert(0, file_path)
@@ -724,7 +731,7 @@ class AddBookDialog(ctk.CTkToplevel):
         try:
             year_val = int(self.year_entry.get()) if self.year_entry.get() else None
         except ValueError:
-            messagebox.showerror("Hata", "Yıl alanı sayı olmalıdır.")
+            messagebox.showerror(get_text("error"), get_text("year_error"))
             return
 
         data = {
@@ -741,7 +748,7 @@ class AddBookDialog(ctk.CTkToplevel):
         }
 
         if not all([data['title'], data['author'], data['isbn'], data['publisher'], data['category']]):
-            messagebox.showerror("Hata", "Kitap Adı, Yazar, ISBN, Yayınevi ve Kategori zorunludur.")
+            messagebox.showerror(get_text("error"), get_text("req_fields_error"))
             return
 
         self.on_save_callback(data)
@@ -755,7 +762,7 @@ class BookList(ctk.CTkScrollableFrame):
 
     def __init__(self, master, books, on_edit, on_delete, on_add_to_list=None, on_author_click=None,
                  on_category_click=None, **kwargs):
-        super().__init__(master, fg_color=BG_COLOR, label_text="Tüm Kitaplar", label_fg_color="transparent",
+        super().__init__(master, fg_color=BG_COLOR, label_text=get_text("all_books_label"), label_fg_color="transparent",
                          label_text_color=TEXT_COLOR, label_font=ctk.CTkFont(size=24, weight="bold"), **kwargs)
         self.books = books
         self.on_edit = on_edit
@@ -768,7 +775,7 @@ class BookList(ctk.CTkScrollableFrame):
 
     def update_books(self, new_books):
         self.books = new_books[::-1]
-        self.configure(label_text=f"Kitaplar ({len(new_books)})",
+        self.configure(label_text=get_text("books_count", count=len(new_books)),
                        label_text_color=PRIMARY_COLOR)
         for widget in self.winfo_children():
             if widget.winfo_class() != 'CTkLabel':
@@ -816,8 +823,8 @@ class BookCard(ctk.CTkFrame):
         info_frame = ctk.CTkFrame(self, fg_color="transparent")
         info_frame.grid(row=1, column=0, padx=10, pady=(15, 5), sticky="ew")
 
-        raw_title = book_data.get('title', 'Başlık Yok')
-        raw_author = book_data.get('author', 'Bilinmiyor')
+        raw_title = book_data.get('title', get_text("no_title"))
+        raw_author = book_data.get('author', get_text("unknown"))
 
         MAX_TITLE_LEN = 40
         MAX_AUTHOR_LEN = 30
@@ -858,7 +865,7 @@ class BookCard(ctk.CTkFrame):
 
         row2 = ctk.CTkFrame(tags_container, fg_color="transparent")
 
-        cat_name = book_data.get('category', 'Kategori')
+        cat_name = book_data.get('category', get_text("category"))
         cat_bg, cat_text = self._get_category_colors(cat_name)
 
         category_tag = ctk.CTkLabel(row1, text=cat_name, fg_color=cat_bg,
@@ -887,11 +894,11 @@ class BookCard(ctk.CTkFrame):
             target_row_for_reading = row1
 
         if status == 'read':
-            reading_text, reading_bg, reading_color = "Okundu", ("#DCFCE7", "#052e16"), ("#166534", "#4ade80")
+            reading_text, reading_bg, reading_color = get_text("read"), ("#DCFCE7", "#052e16"), ("#166534", "#4ade80")
         elif status == 'in_progress':
-            reading_text, reading_bg, reading_color = "Okunuyor", ("#FEF3C7", "#451a03"), ("#D97706", "#fcd34d")
+            reading_text, reading_bg, reading_color = get_text("in_progress"), ("#FEF3C7", "#451a03"), ("#D97706", "#fcd34d")
         else:
-            reading_text, reading_bg, reading_color = "Okunacak", ("#FCE7F3", "#4c0519"), ("#DB2777", "#f43f5e")
+            reading_text, reading_bg, reading_color = get_text("unread"), ("#FCE7F3", "#4c0519"), ("#DB2777", "#f43f5e")
 
         reading_tag = ctk.CTkLabel(target_row_for_reading, text=reading_text, fg_color=reading_bg,
                                    text_color=reading_color,
@@ -973,7 +980,7 @@ class EditBookDialog(AddBookDialog):
         self.book_data = book_data
         cat_dict = parent.get_all_categories_with_subcats()
         super().__init__(parent, cat_dict=cat_dict, on_save_callback=on_save)
-        self.title("Kitabı Düzenle")
+        self.title(get_text("edit_book"))
         self._fill_existing_data()
         self._update_ui_elements()
 
@@ -1001,8 +1008,8 @@ class EditBookDialog(AddBookDialog):
         for child in self.scroll_frame.winfo_children():
             if isinstance(child, ctk.CTkFrame):
                 for sub_child in child.winfo_children():
-                    if isinstance(sub_child, ctk.CTkButton) and sub_child.cget("text") == "Ekle":
-                        sub_child.configure(text="Güncelle")
+                    if isinstance(sub_child, ctk.CTkButton) and sub_child.cget("text") == get_text("add"):
+                        sub_child.configure(text=get_text("update"))
 
     def _save_book(self):
         data = {
@@ -1020,7 +1027,7 @@ class EditBookDialog(AddBookDialog):
         }
 
         if not all([data['title'], data['author'], data['isbn'], data['publisher'], data['category']]):
-            messagebox.showwarning("Hata", "Lütfen tüm zorunlu alanları doldurun.", parent=self)
+            messagebox.showwarning(get_text("error"), get_text("req_fields_error_2"), parent=self)
             return
 
         self.on_save_callback(data)
@@ -1034,7 +1041,7 @@ class AddToListDialog(ctk.CTkToplevel):
     def __init__(self, master, book_data, available_lists, on_save_callback, **kwargs):
         super().__init__(master, **kwargs)
         self.configure(fg_color=BG_COLOR)
-        self.title("Listeleri Yönet")
+        self.title(get_text("manage_lists"))
         self.geometry("350x450")
         self.transient(master)
         self.grab_set()
@@ -1077,11 +1084,11 @@ class AddToListDialog(ctk.CTkToplevel):
         btn_frame.grid(row=2, column=0, padx=20, pady=(10, 20), sticky="ew")
         btn_frame.columnconfigure((0, 1), weight=1)
 
-        cancel_btn = ctk.CTkButton(btn_frame, text="İptal", command=self.destroy,
+        cancel_btn = ctk.CTkButton(btn_frame, text=get_text("cancel"), command=self.destroy,
                                    fg_color=LOCAL_CARD_BG, text_color=TEXT_COLOR, hover_color=ACCENT_COLOR)
         cancel_btn.grid(row=0, column=0, padx=(0, 5), sticky="ew")
 
-        save_btn = ctk.CTkButton(btn_frame, text="Kaydet", command=self._save,
+        save_btn = ctk.CTkButton(btn_frame, text=get_text("save"), command=self._save,
                                  fg_color=PRIMARY_COLOR, hover_color=ACCENT_COLOR)
         save_btn.grid(row=0, column=1, padx=(5, 0), sticky="ew")
 

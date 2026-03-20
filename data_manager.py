@@ -41,10 +41,10 @@ class JSONManager:
                    query in b.get('publisher', '').lower()
             ]
 
-        if category and category not in ["Tümü", "Tüm Kitaplar"]:
+        if category and category not in ["Tümü", "Tüm Kitaplar", "All", "All Books", "All Categories"]:
             books = [b for b in books if b.get('category') == category]
 
-        if subcategory and subcategory not in ["Tümü", "Tüm Alt Kategoriler", ""]:
+        if subcategory and subcategory not in ["Tümü", "Tüm Alt Kategoriler", "", "All", "All Subcategories"]:
             books = [b for b in books if b.get('subcategory') == subcategory]
 
         if status and status not in ["all", "Tüm Durumlar"]:
@@ -54,8 +54,8 @@ class JSONManager:
             is_owned = (stock == "available")
             books = [b for b in books if b.get('owned') == is_owned]
 
-        if list_type and list_type not in ["all_list", "Tümü", "Tüm Kitaplar", "📚 Tüm Kitaplar"]:
-            target_list = "Favorilerim" if list_type == "favorites" else list_type
+        if list_type and list_type not in ["all_list", "Tümü", "Tüm Kitaplar", "📚 Tüm Kitaplar", "📚 All Books", "All Lists"]:
+            target_list = "Favorilerim" if list_type in ["favorites", "Favorilerim", "⭐ Favorilerim", "⭐ Favorites", "Favorites"] else list_type
             books = [b for b in books if target_list in b.get('lists', [])]
 
         return books

@@ -100,6 +100,7 @@ class Assets:
                 "remove": "remove.png",
                 "light_m" : "light_mode.png",
                 "dark_m" : "dark_mode.png",
+                "language": "language.png"
             }
 
             for name, filename in icon_files.items():
