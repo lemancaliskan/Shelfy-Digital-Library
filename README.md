@@ -7,6 +7,11 @@
 *Shelfy offers a sleek, eye-pleasing experience in both light and dark modes, utilizing the modern power of ``CustomTkinter``:*
 <br>
 
+<img width="770" alt="image" src="https://github.com/user-attachments/assets/f405d231-1211-4bea-ac7e-57872a519e23" />
+<img width="770" alt="image" src="https://github.com/user-attachments/assets/2b643011-e60c-454c-b0ff-38171670985f" />
+
+
+
 ---
 ✨ Features
 ---
