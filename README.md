@@ -44,14 +44,6 @@
 ---
 🛠️ Installation and Usage
 ---
-- ***Standalone Executable (Recommended)***
-<br>Run the application directly without needing to install Python:
-
-     - Go to the **[Releases Page](https://github.com/lemancaliskan/Shelfy-Digital-Library/releases/tag/v1.0)**
-     - Download the ``Shelfy.exe`` file from the latest release.
-     - Double-click to start managing your library.
-       
-    
 - ***For Developers:***
 <br>If you want to run the project locally or contribute:
 
