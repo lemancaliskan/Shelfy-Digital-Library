@@ -2,10 +2,16 @@ import json
 import os
 import uuid
 import shutil
+import sys
+
+def get_base_path():
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    return os.path.dirname(os.path.abspath(__file__))
 
 class JSONManager:
     def __init__(self):
-        self.base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.base_dir = get_base_path()
         self.data_folder = os.path.join(self.base_dir, 'data')
         self.db_path = os.path.join(self.data_folder, 'library.json')
         self.covers_folder = os.path.join(self.data_folder, 'covers')
@@ -30,6 +36,11 @@ class JSONManager:
                            list_type=None):
         data = self._load_data()
         books = data.get("books", [])
+
+        for book in books:
+            if book.get('cover') and book['cover'] != 'default':
+                filename = os.path.basename(book['cover'])
+                book['cover'] = os.path.join(self.covers_folder, filename)
 
         if search_query:
             query = search_query.lower()
