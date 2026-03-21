@@ -26,12 +26,12 @@ class App(ctk.CTk):
         if os.path.exists(ico_path):
             self.iconbitmap(ico_path)
 
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        x = int((screen_width / 2) - (APP_WIDTH / 2))
-        y = int((screen_height / 2) - (APP_HEIGHT / 2))
-        self.geometry(f"{APP_WIDTH}x{APP_HEIGHT}+{x}+{y}")
-        self.minsize(APP_WIDTH, APP_HEIGHT)
+            self.app_w = 980
+            self.app_h = 666
+            self.set_top_center()
+            self.minsize(self.app_w, self.app_h)
+
+            self.after(100, self.lift)
 
         self.bind_class("Entry", "<Button-3>", show_context_menu)
         self.bind_class("CTkEntry", "<Button-3>", show_context_menu)
@@ -59,6 +59,12 @@ class App(ctk.CTk):
 
         self.create_widgets()
         self.load_books()
+
+    def set_top_center(self):
+        screen_width = self.winfo_screenwidth()
+        x = (screen_width // 2) - (self.app_w // 2)
+        y = 20
+        self.geometry(f"{self.app_w}x{self.app_h}+{int(x)}+{int(y)}")
 
     def create_widgets(self):
         # SIDEBAR #
