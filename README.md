@@ -47,8 +47,7 @@
 - ***Standalone Executable (Recommended)***
 <br>Run the application directly without needing to install Python:
 
-
-     - Go to the **[Releases Page](https://github.com/lemancaliskan/Shelfy-Dijital-Kutuphane-Yonetimi/releases/tag/v1.0)**
+     - Go to the **[Releases Page](https://github.com/lemancaliskan/Shelfy-Digital-Library/releases/tag/v1.0)**
      - Download the ``Shelfy.exe`` file from the latest release.
      - Double-click to start managing your library.
        
@@ -58,10 +57,10 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/lemancaliskan/Shelfy-Dijital-Kutuphane-Yonetimi.git
+git clone https://github.com/lemancaliskan/Shelfy-Digital-Library.git
 
 # Go to the project directory
-cd Shelfy-Dijital-Kutuphane-Yonetimi
+cd Shelfy-Digital-Library
 
 # Install required libraries
 pip install -r requirements.txt
