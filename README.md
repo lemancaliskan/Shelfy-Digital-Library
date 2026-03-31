@@ -11,6 +11,9 @@
 📺 Screenshots
 ---
 
+<img width="770" alt="image" src="https://github.com/user-attachments/assets/9af9de28-a360-44e0-9d3d-c7898c9d4350" />
+<img width="770" alt="image" src="https://github.com/user-attachments/assets/b0797a0c-f1c0-4feb-89a9-130697e3fa76" />
+
 ---
 ✨ Key Features (PySide6)
 ---
