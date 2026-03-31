@@ -1,45 +1,43 @@
 # 📚 Shelfy - Modern Digital Library Management
 
-*Shelfy is a modern and user-friendly library management interface designed for book enthusiasts. It allows you to categorize your personal book collection, track your reading status, and create custom lists.*
----
-📺 Demo
----
-*Shelfy offers a sleek, eye-pleasing experience in both light and dark modes, utilizing the modern power of ``CustomTkinter``:*
-<br>
-
-<img width="770" alt="image" src="https://github.com/user-attachments/assets/f405d231-1211-4bea-ac7e-57872a519e23" />
-<img width="770" alt="image" src="https://github.com/user-attachments/assets/2b643011-e60c-454c-b0ff-38171670985f" />
-
-
+*Shelfy is a comprehensive and user-friendly library management ecosystem designed for book enthusiasts. It allows you to organize your personal collection, track reading progress, and manage custom lists across multiple modern Python frameworks.*
 
 ---
-✨ Features
+🚀 Featured Version: PySide6 Edition
+---
+*The latest evolution of Shelfy, built with PySide6 (Qt for Python). This version focuses on high performance, advanced UI/UX, and professional desktop standards.*
+
+---
+📺 Screenshots
 ---
 
-- **Dynamic Language Support (i18n):** Newly added translation system allows you to easily switch between English and Turkish interfaces.
+---
+✨ Key Features (PySide6)
+---
+- **Advanced UI Engine:** Powered by Qt, offering smoother animations and a more robust desktop experience.
 
-- **Modern Card Design:** Books are displayed as stylish cards with their cover images and essential information.
+- **Dynamic Theme Engine:** Full support for system-aware Dark and Light modes with custom styled widgets.
 
-- **Dynamic Filtering:** Instant filtering by category, subcategory, stock status, or reading status (Read, Reading, To Read).
+- **Rich Interaction:** Enhanced drag-and-drop feel, custom combo boxes with search, and refined dialog windows.
 
-- **Custom Lists:** Create completely personalized lists like "My E-books" and assign books to these lists.
+- **Global Localization:** Integrated i18n system for instant switching between English and Turkish.
 
-- **Advanced Search:** Real-time search results by book title, ISBN, or author name.
+- **Smart Filtering & Search:** Real-time results by Category, Subcategory, ISBN, or Author.
+
+- **Asset Intelligence:** Automated favicon generation and dynamic icon scaling.
 
 - **JSON-Based Data Management:** Portable and fast data storage structure that requires no database installation.
-
-- **Dark/Light Theme:** Manually toggleable modern interface.
 
 ---
 🧬 Technical Architecture
 ---
-*The application consists of three main layers in a sustainable and modular structure:*
+*The project follows a modular, scalable architecture shared (logic-wise) across versions:*
 
-- **UI Components:** CustomTkinter-based customized cards, dialog windows, and sidebar elements defined in ``ui_components.py``.
+- **UI Layer:** Framework-specific implementations (``shelfy_pyside`` or ``shelfy_ctk``).
 
-- **Data Manager:** The engine managed via ``data_manager.py`` that handles JSON operations and cover image downloads.
+- **Core Logic (``data_manager.py``):** Handles JSON-based portable storage and automated cover image downloads via API.
 
-- **Assets Manager:** A centralized system that dynamically manages color palettes, icons, and favicon generation.
+- **Assets Engine (``assets_manager.py``):** Centralized palette management and dynamic asset loading.
 
 ---
 🛠️ Installation and Usage
@@ -57,26 +55,53 @@ cd Shelfy-Digital-Library
 # Install required libraries
 pip install -r requirements.txt
 
-# Run the application
-python main.py
+# Run the application (Preferred Version)
+To run the latest PySide6 version (Recommended):
+python shelfy_pyside/main.py
+
+# Run the application (CustomTkinter Version)
+To run the CustomTkinter version:
+python shelfy_ctk/main_ctk.py
 ```
+
+---
+🕰️ Legacy Version: CustomTkinter
+---
+*For those who prefer a lightweight CustomTkinter experience, the original version of Shelfy is still maintained in the shelfy_ctk/ directory. It offers the same core library management features with a different visual aesthetic.
+<br>Legacy version offers a sleek, eye-pleasing experience in both light and dark modes, utilizing the modern power of ``CustomTkinter``:*
+<br>
+
+<img width="770" alt="image" src="https://github.com/user-attachments/assets/f405d231-1211-4bea-ac7e-57872a519e23" />
+<img width="770" alt="image" src="https://github.com/user-attachments/assets/2b643011-e60c-454c-b0ff-38171670985f" />
 
 ---
 📁 Project Structure
 ---
-
 ```bash
 Shelfy/
-├── 📁 assets/                # Application icons, logo
-├── 📁 data/                  # Local data storage
-│   ├── 📁 covers/            # Book cover images (protected by .gitkeep)
-│   └── 📄 library.json       # Main file holding book and list data
-├── 📄 main.py                # Application entry point and main loop
-├── 📄 data_manager.py        # Data processing and JSON management layer
-├── 📄 ui_components.py       # Interface elements and custom widgets
-├── 📄 assets_manager.py      # Theme, color, and asset management
-├── 📜 requirements.txt       # Required libraries
-└── ⚙️ .gitignore             # Files untracked by Git
+├── 📁 shelfy_py6/          # Featured: Main PySide6 implementation
+│   ├── 📁 assets/                # Application icons, logo
+│   ├── 📁 data/                  # Local data storage
+│   ├── 📁 covers/                # Book cover images (protected by .gitkeep)
+│   └── 📄 library.json           # Main file holding book and list data
+│   ├── 📄 main.py                # Application entry point and main loop
+│   ├── 📄 data_manager.py        # Data processing and JSON management layer
+│   ├── 📄 ui_components.py       # Interface elements and custom widgets
+│   ├── 📄 assets_manager.py      # Theme, color, and asset management
+│   ├── 📜 requirements.txt       # Required libraries
+├── 📁 shelfy_ctk/          # Alternative: CustomTkinter implementation
+│   ├── 📁 assets/                # Application icons, logo
+│   ├── 📁 data/                  # Local data storage
+│   ├── 📁 covers/                # Book cover images (protected by .gitkeep)
+│   └── 📄 library.json           # Main file holding book and list data
+│   ├── 📄 main.py                # Application entry point and main loop
+│   ├── 📄 data_manager.py        # Data processing and JSON management layer
+│   ├── 📄 ui_components.py       # Interface elements and custom widgets
+│   ├── 📄 assets_manager.py      # Theme, color, and asset management
+│   ├── 📜 requirements.txt       # Required libraries
+├── 📄 README.md             # Project documentation
+├── 📄 LICENSE               # MIT License file
+└── ⚙️ .gitignore            # Files untracked by Git
 ```
 
 ---
