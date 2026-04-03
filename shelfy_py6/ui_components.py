@@ -12,12 +12,14 @@ from assets_manager import (Assets, PRIMARY_COLOR, BG_COLOR_DARK, ACCENT_COLOR, 
                             DIALOG_WIDTH, DIALOG_HEIGHT, CAT_COLORS)
 from translations import get_text
 
+
 def apply_shadow(widget, radius=15, alpha=40):
     shadow = QGraphicsDropShadowEffect()
     shadow.setBlurRadius(radius)
     shadow.setColor(QColor(97, 61, 193, alpha))
     shadow.setOffset(0, 4)
     widget.setGraphicsEffect(shadow)
+
 
 def apply_combo_style(combo, dropdown_bg, fg_color):
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -97,7 +99,6 @@ def apply_combo_style(combo, dropdown_bg, fg_color):
 
 
 class IconButton(QPushButton):
-
     def __init__(self, icon, base_size=24, hover_scale=1.2, parent=None):
         super().__init__(parent)
         if isinstance(icon, QIcon):
@@ -328,8 +329,10 @@ class TotalBooksCard(QFrame):
 
 
 class Sidebar(QScrollArea):
-    def __init__(self, parent, theme, categories, subcategories, custom_lists, on_list_select, on_select_category,
-                 on_select_subcategory, on_search_change, on_filter_change, on_add_list, on_delete_list,
+    def __init__(self, parent, theme, categories, subcategories, languages, custom_lists, on_list_select,
+                 on_select_category,
+                 on_select_subcategory, on_select_language, on_search_change, on_filter_change, on_add_list,
+                 on_delete_list,
                  ):
         super().__init__(parent)
         self.theme = theme
@@ -344,10 +347,12 @@ class Sidebar(QScrollArea):
 
         self.categories = categories
         self.subcategories = subcategories
+        self.languages = languages
         self.custom_lists = custom_lists if custom_lists else []
 
         self.on_select_category = on_select_category
         self.on_select_subcategory = on_select_subcategory
+        self.on_select_language = on_select_language
         self.on_search_change = on_search_change
         self.on_filter_change = on_filter_change
         self.on_list_select = on_list_select
@@ -399,6 +404,17 @@ class Sidebar(QScrollArea):
         self.subcat_combo.currentTextChanged.connect(self.on_select_subcategory)
         self.layout.addWidget(self.subcat_combo)
 
+        self.lang_lbl = QLabel(get_text("language_label"))
+        self.lang_lbl.setFont(QFont("Arial", 9, QFont.Bold))
+        self.lang_lbl.setStyleSheet(f"color: {PRIMARY_COLOR};")
+        self.layout.addWidget(self.lang_lbl)
+
+        self.lang_combo = QComboBox()
+        self._style_combo(self.lang_combo)
+        self.lang_combo.addItems([get_text("all")] + [l for l in self.languages if l != get_text("all")])
+        self.lang_combo.currentTextChanged.connect(self.on_select_language)
+        self.layout.addWidget(self.lang_combo)
+
         self._toggle_subcats()
 
     def _on_cat_changed(self, text):
@@ -436,6 +452,16 @@ class Sidebar(QScrollArea):
         self.update_lists(self.custom_lists)
         self.list_combo.currentTextChanged.connect(self._on_list_changed)
         self.layout.addWidget(self.list_combo)
+
+    def update_languages(self, langs):
+        self.languages = langs
+        curr = self.lang_combo.currentText()
+        self.lang_combo.blockSignals(True)
+        self.lang_combo.clear()
+        self.lang_combo.addItems([get_text("all")] + [l for l in langs if l != get_text("all")])
+        if curr in [self.lang_combo.itemText(i) for i in range(self.lang_combo.count())]:
+            self.lang_combo.setCurrentText(curr)
+        self.lang_combo.blockSignals(False)
 
     def _on_list_changed(self, choice):
         if choice in [get_text("all_books"), get_text("favorites")]:
@@ -563,9 +589,10 @@ class Sidebar(QScrollArea):
 
 
 class AddBookDialog(QDialog):
-    def __init__(self, parent, cat_dict, on_save_callback):
+    def __init__(self, parent, cat_dict, lang_list, on_save_callback):
         super().__init__(parent)
         self.cat_dict = cat_dict
+        self.lang_list = lang_list
         self.on_save_callback = on_save_callback
         self.setWindowTitle(get_text("add_new_book"))
         self.setFixedSize(DIALOG_WIDTH, DIALOG_HEIGHT)
@@ -591,9 +618,6 @@ class AddBookDialog(QDialog):
         self.cat_combo = QComboBox()
         self.cat_combo.setEditable(True)
         self.cat_combo.lineEdit().setStyleSheet("background: transparent; border: none;")
-        self.cat_combo.addItems([c for c in self.cat_dict.keys() if c != get_text("all")])
-        self.cat_combo.currentTextChanged.connect(self._on_cat_change)
-        self._style_combo(self.cat_combo)
         self.layout.addWidget(self.cat_combo)
 
         lbl2 = QLabel(get_text("subcategory_opt"))
@@ -602,8 +626,24 @@ class AddBookDialog(QDialog):
         self.subcat_combo = QComboBox()
         self.subcat_combo.setEditable(True)
         self.subcat_combo.lineEdit().setStyleSheet("background: transparent; border: none;")
-        self._style_combo(self.subcat_combo)
         self.layout.addWidget(self.subcat_combo)
+
+        self.cat_combo.addItems([c for c in self.cat_dict.keys() if c != get_text("all")])
+        self.cat_combo.currentTextChanged.connect(self._on_cat_change)
+
+        self._style_combo(self.cat_combo)
+        self._style_combo(self.subcat_combo)
+
+        lbl_lang = QLabel(get_text("language_req"))
+        lbl_lang.setFont(QFont("Arial", 10, QFont.Bold))
+        self.layout.addWidget(lbl_lang)
+
+        self.lang_combo = QComboBox()
+        self.lang_combo.setEditable(True)
+        self.lang_combo.lineEdit().setStyleSheet("background: transparent; border: none;")
+        self.lang_combo.addItems([l for l in self.lang_list if l != get_text("all")])
+        self._style_combo(self.lang_combo)
+        self.layout.addWidget(self.lang_combo)
 
         if self.cat_combo.count() > 0:
             self._on_cat_change(self.cat_combo.currentText())
@@ -761,13 +801,15 @@ class AddBookDialog(QDialog):
             'publisher': self.publisher_entry.text().strip(),
             'category': self.cat_combo.currentText().strip(),
             'subcategory': self.subcat_combo.currentText().strip(),
+            'language': self.lang_combo.currentText().strip(),
             'year': year_val,
             'readingStatus': read_val,
             'stockStatus': stock_val,
             'cover': self.cover_entry.text().strip()
         }
 
-        if not all([data['title'], data['author'], data['isbn'], data['publisher'], data['category']]):
+        if not all(
+                [data['title'], data['author'], data['isbn'], data['publisher'], data['category'], data['language']]):
             QMessageBox.critical(self, get_text("error"), get_text("req_fields_error"))
             return
 
@@ -776,10 +818,9 @@ class AddBookDialog(QDialog):
 
 
 class EditBookDialog(AddBookDialog):
-    def __init__(self, parent, on_save, book_data):
+    def __init__(self, parent, cat_dict, lang_list, on_save, book_data):
         self.book_data = book_data
-        cat_dict = parent.get_all_categories_with_subcats()
-        super().__init__(parent, cat_dict, on_save)
+        super().__init__(parent, cat_dict, lang_list, on_save)
         self.setWindowTitle(get_text("edit_book"))
         self.save_btn.setText(get_text("update"))
         self._fill_data()
@@ -791,6 +832,7 @@ class EditBookDialog(AddBookDialog):
         self.publisher_entry.setText(self.book_data.get('publisher', ''))
         self.cat_combo.setCurrentText(self.book_data.get('category', ''))
         self.subcat_combo.setCurrentText(self.book_data.get('subcategory', ''))
+        self.lang_combo.setCurrentText(self.book_data.get('language', ''))
         if self.book_data.get('year'): self.year_entry.setText(str(self.book_data.get('year')))
 
         cover = self.book_data.get('cover', '')
@@ -827,12 +869,14 @@ class EditBookDialog(AddBookDialog):
             "publisher": self.publisher_entry.text().strip(),
             "category": self.cat_combo.currentText().strip(),
             "subcategory": self.subcat_combo.currentText().strip(),
+            "language": self.lang_combo.currentText().strip(),
             "reading_status": read_val,
             "owned": (stock_val == "available"),
             "cover": self.cover_entry.text().strip()
         }
 
-        if not all([data['title'], data['author'], data['isbn'], data['publisher'], data['category']]):
+        if not all(
+                [data['title'], data['author'], data['isbn'], data['publisher'], data['category'], data['language']]):
             QMessageBox.critical(self, get_text("error"), get_text("req_fields_error_2"))
             return
 
@@ -881,8 +925,6 @@ class AddToListDialog(QDialog):
         curr = book_data.get("lists", [])
         for lst in available_lists:
             self.combo.add_item(lst, checked=(lst in curr))
-
-            
 
         layout.addWidget(self.combo)
         layout.addStretch()

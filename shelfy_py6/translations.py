@@ -81,7 +81,10 @@ LANG_EN = {
     "req_fields_error_2": "Please fill in all required fields.",
     "manage_lists": "Manage Lists",
     "save": "Save",
-    "total_books_sidebar": "total Books"
+    "total_books_sidebar": "total Books",
+    "language_label": "LANGUAGES",
+    "language_req": "Language * (Select/Type)",
+    "ex_lang": "E.g.: English",
 }
 
 LANG_TR = {
@@ -167,7 +170,10 @@ LANG_TR = {
     "req_fields_error_2": "Lütfen tüm zorunlu alanları doldurun.",
     "manage_lists": "Listeleri Yönet",
     "save": "Kaydet",
-    "total_books_sidebar": "Toplam Kitap"
+    "total_books_sidebar": "Toplam Kitap",
+    "language_label": "DİLLER",
+    "language_req": "Kitap Dili * (Seç/Yaz)",
+    "ex_lang": "Örn: Türkçe",
 }
 
 _current_lang = "TR"

@@ -32,7 +32,7 @@ class JSONManager:
         with open(self.db_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
-    def get_filtered_books(self, search_query=None, category=None, subcategory=None, status=None, stock=None,
+    def get_filtered_books(self, search_query=None, category=None, subcategory=None, language=None, status=None, stock=None,
                            list_type=None):
         data = self._load_data()
         books = data.get("books", [])
@@ -55,6 +55,9 @@ class JSONManager:
         if category and category not in ["Tümü", "Tüm Kitaplar", "All", "All Books", "All Categories"]:
             books = [b for b in books if b.get('category') == category]
 
+        if language and language not in ["Tümü", "All", ""]:
+            books = [b for b in books if b.get('language') == language]
+
         if subcategory and subcategory not in ["Tümü", "Tüm Alt Kategoriler", "", "All", "All Subcategories"]:
             books = [b for b in books if b.get('subcategory') == subcategory]
 
@@ -73,7 +76,7 @@ class JSONManager:
 
         return books
 
-    def add_book(self, title, author, isbn, year, publisher, category, subcategory, owned, reading_status,
+    def add_book(self, title, author, isbn, year, publisher, category, subcategory, language, owned, reading_status,
                  cover_path=None):
         data = self._load_data()
         book_id = str(uuid.uuid4())
@@ -97,6 +100,7 @@ class JSONManager:
             "publisher": publisher,
             "category": category,
             "subcategory": subcategory,
+            "language": language,
             "owned": owned,
             "reading_status": reading_status,
             "cover": final_cover_path,

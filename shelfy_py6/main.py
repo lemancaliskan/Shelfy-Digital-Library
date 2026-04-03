@@ -29,6 +29,7 @@ class App(QMainWindow):
         self.current_theme = "Light"
         self.current_category = get_text("all")
         self.current_subcategory = get_text("all")
+        self.current_language = get_text("all")
         self.current_search_term = ""
         self.current_reading_status = "all"
         self.current_stock_status = "all"
@@ -106,9 +107,11 @@ class App(QMainWindow):
         self.sidebar = Sidebar(self, theme=self.current_theme,
                                categories=self.get_unique_categories(),
                                subcategories=self.get_unique_subcategories(get_text("all")),
+                               languages=self.get_unique_languages(),
                                custom_lists=self.custom_lists,
                                on_select_category=self.filter_by_category,
                                on_select_subcategory=self.filter_by_subcategory,
+                               on_select_language=self.filter_by_language,
                                on_search_change=self.filter_by_search,
                                on_filter_change=self.filter_by_status,
                                on_add_list=self.add_custom_list,
@@ -168,6 +171,7 @@ class App(QMainWindow):
     def reset_to_dashboard(self, event=None):
         self.current_category = get_text("all")
         self.current_subcategory = get_text("all")
+        self.current_language = get_text("all")
         self.current_search_term = ""
         self.current_reading_status = "all"
         self.current_stock_status = "all"
@@ -197,6 +201,7 @@ class App(QMainWindow):
         self.setWindowTitle(get_text("app_title"))
         self.current_category = get_text("all")
         self.current_subcategory = get_text("all")
+        self.current_language = get_text("all")
         self.current_list_type = "all_list"
         self.create_widgets()
         self.load_books()
@@ -215,6 +220,7 @@ class App(QMainWindow):
             search_query=self.current_search_term,
             category=self.current_category,
             subcategory=self.current_subcategory,
+            language=self.current_language,
             status=self.current_reading_status,
             stock=self.current_stock_status,
             list_type=self.current_list_type
@@ -223,6 +229,7 @@ class App(QMainWindow):
 
         self.sidebar.update_categories(self.get_unique_categories())
         self.sidebar.update_subcategories(self.get_unique_subcategories(self.current_category))
+        self.sidebar.update_languages(self.get_unique_languages())
         self.sidebar.update_lists(self.custom_lists)
 
         self.sidebar.update_stats(len(books))
@@ -246,6 +253,18 @@ class App(QMainWindow):
                                 b.get('category') == category_name and b.get('subcategory')]))
         if all_text not in subcats: subcats.insert(0, all_text)
         return sorted(subcats, key=lambda x: (x != all_text, x))
+
+    def get_unique_languages(self):
+        data = self.db._load_data()
+        books = data.get("books", [])
+        langs = list(set([b.get('language', '') for b in books if b.get('language')]))
+        all_text = get_text("all")
+        if all_text not in langs: langs.insert(0, all_text)
+        return sorted(langs, key=lambda x: (x != all_text, x))
+
+    def filter_by_language(self, language_name):
+        self.current_language = language_name
+        self.load_books()
 
     def get_all_categories_with_subcats(self):
         data = self.db._load_data()
@@ -329,7 +348,7 @@ class App(QMainWindow):
         dlg.exec()
 
     def open_add_book_dialog(self):
-        dlg = AddBookDialog(self, self.get_all_categories_with_subcats(), self.add_book)
+        dlg = AddBookDialog(self, self.get_all_categories_with_subcats(), self.get_unique_languages(), self.add_book)
         if dlg.exec():
             self.load_books()
 
@@ -338,6 +357,7 @@ class App(QMainWindow):
             success = self.db.add_book(
                 title=data['title'], author=data['author'], isbn=data['isbn'], year=data['year'],
                 publisher=data['publisher'], category=data['category'], subcategory=data.get('subcategory', ''),
+                language=data['language'],
                 owned=(data['stockStatus'] == "available"), reading_status=data['readingStatus'],
                 cover_path=data['cover']
             )
@@ -369,7 +389,7 @@ class App(QMainWindow):
             else:
                 QMessageBox.critical(self, get_text("error"), get_text("book_update_error"))
 
-        dlg = EditBookDialog(self, save_changes, book_data)
+        dlg = EditBookDialog(self, self.get_all_categories_with_subcats(), self.get_unique_languages(), save_changes, book_data)
         dlg.exec()
 
 if __name__ == "__main__":
