@@ -37,58 +37,53 @@ class JSONManager:
         data = self._load_data()
         books = data.get("books", [])
 
-        filtered = []
         from translations import get_text
 
         for book in books:
-            match = True
+            if book.get('cover') and book['cover'] != 'default':
+                filename = os.path.basename(book['cover'])
+                book['cover'] = os.path.join(self.covers_folder, filename)
 
-            if search_query:
-                q = search_query.lower()
-                if q not in book.get('title', '').lower() and q not in book.get('author', '').lower():
-                    match = False
+        if search_query:
+            query = search_query.lower()
+            books = [
+                b for b in books
+                if query in b.get('title', '').lower() or
+                   query in b.get('author', '').lower() or
+                   query in b.get('isbn', '').lower() or
+                   query in b.get('publisher', '').lower()
+            ]
 
-            if category and category != get_text("all"):
-                if book.get('category') != category:
-                    match = False
+        if category and category not in ["Tümü", "Tüm Kitaplar", "All", "All Books", "All Categories", get_text("all")]:
+            books = [b for b in books if b.get('category') == category]
 
-            if subcategory and subcategory != get_text("all"):
-                if book.get('subcategory') != subcategory:
-                    match = False
+        if subcategory and subcategory not in ["Tümü", "Tüm Alt Kategoriler", "", "All", "All Subcategories", get_text("all")]:
+            books = [b for b in books if b.get('subcategory') == subcategory]
 
-            if language and language != get_text("all"):
-                if book.get('language') != language:
-                    match = False
+        if language and language not in ["all", "Tümü", "All", get_text("all")]:
+            books = [b for b in books if b.get('language') == language]
 
-            if status and status != "all":
-                if book.get('reading_status') != status:
-                    match = False
+        if status and status not in ["all", "Tüm Durumlar"]:
+            books = [b for b in books if b.get('reading_status') == status]
 
-            if stock and stock != "all":
-                if book.get('stock_status') != stock:
-                    match = False
+        if stock and stock != "all":
+            is_owned = (stock == "available")
+            books = [b for b in books if b.get('owned') == is_owned]
 
-            if list_type and list_type != "all_list":
-                if list_type == "favorites":
-                    if not book.get('is_favorite', False):
-                        match = False
-                else:
-                    if list_type not in book.get('lists', []):
-                        match = False
-
-            if match:
-                filtered.append(book)
+        if list_type and list_type not in ["all_list", "Tümü", "Tüm Kitaplar", "📚 Tüm Kitaplar", "📚 All Books", "All Lists"]:
+            target_list = "Favorilerim" if list_type in ["favorites", "Favorilerim", "⭐ Favorilerim", "⭐ Favorites", "Favorites"] else list_type
+            books = [b for b in books if target_list in b.get('lists', []) or (target_list == "Favorilerim" and b.get('is_favorite', False))]
 
         if sort_by == "sort_az":
-            filtered.sort(key=lambda x: x.get("title", "").lower())
+            books.sort(key=lambda x: x.get("title", "").lower())
         elif sort_by == "sort_za":
-            filtered.sort(key=lambda x: x.get("title", "").lower(), reverse=True)
+            books.sort(key=lambda x: x.get("title", "").lower(), reverse=True)
         elif sort_by == "sort_oldest":
             pass
         else:
-            filtered.reverse()
+            books.reverse()
 
-        return filtered
+        return books
 
     def add_book(self, title, author, isbn, year, publisher, category, subcategory, language, owned, reading_status,
                  cover_path=None):

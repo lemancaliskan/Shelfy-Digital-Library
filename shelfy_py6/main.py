@@ -300,10 +300,27 @@ class App(QMainWindow):
 
         self.book_list.update_books(books)
 
+        self.sidebar.cat_combo.blockSignals(True)
         self.sidebar.update_categories(self.get_unique_categories())
+        self.sidebar.cat_combo.setCurrentText(self.current_category)
+        self.sidebar.cat_combo.blockSignals(False)
+
+        self.sidebar.subcat_combo.blockSignals(True)
         self.sidebar.update_subcategories(self.get_unique_subcategories(self.current_category))
+        self.sidebar.subcat_combo.setCurrentText(self.current_subcategory)
+        self.sidebar.subcat_combo.blockSignals(False)
+
         self.sidebar.update_languages(self.get_unique_languages())
+
+        self.sidebar.list_combo.blockSignals(True)
         self.sidebar.update_lists(self.custom_lists)
+        if self.current_list_type == "all_list":
+            self.sidebar.list_combo.setCurrentText(get_text("all_books"))
+        elif self.current_list_type == "favorites":
+            self.sidebar.list_combo.setCurrentText(get_text("favorites"))
+        else:
+            self.sidebar.list_combo.setCurrentText(self.current_list_type)
+        self.sidebar.list_combo.blockSignals(False)
 
         self.sidebar.update_stats(len(books))
 
@@ -362,6 +379,12 @@ class App(QMainWindow):
         self.load_books()
 
     def filter_by_category_from_card(self, category_name, subcategory_name=None):
+        self.current_search_term = ""
+        if hasattr(self, 'sidebar'):
+            self.sidebar.search_entry.blockSignals(True)
+            self.sidebar.search_entry.clear()
+            self.sidebar.search_entry.blockSignals(False)
+
         self.current_category = category_name
         self.sidebar.cat_combo.setCurrentText(category_name)
         if subcategory_name:
@@ -411,13 +434,24 @@ class App(QMainWindow):
 
     def open_add_to_list_dialog(self, book_data):
         def save_book_lists(updated_lists):
-            if self.db.update_book(book_data['id'], {'lists': updated_lists}):
+            fav_text = get_text("favorites")
+            is_fav = fav_text in updated_lists or "Favorilerim" in updated_lists
+            clean_lists = [lst for lst in updated_lists if lst not in (fav_text, "Favorilerim")]
+            if self.db.update_book(book_data['id'], {'lists': clean_lists, 'is_favorite': is_fav}):
                 self.load_books()
             else:
                 QMessageBox.critical(self, get_text("error"), get_text("list_update_error"))
 
-        all_available_lists = ["Favorilerim"] + self.custom_lists
-        dlg = AddToListDialog(self, book_data, all_available_lists, save_book_lists)
+        fav_text = get_text("favorites")
+        all_available_lists = [fav_text] + self.custom_lists
+        temp_book_data = book_data.copy()
+        temp_lists = temp_book_data.get('lists', []).copy()
+        if temp_book_data.get('is_favorite', False):
+            if fav_text not in temp_lists:
+                temp_lists.append(fav_text)
+        temp_book_data['lists'] = temp_lists
+
+        dlg = AddToListDialog(self, temp_book_data, all_available_lists, save_book_lists)
         dlg.exec()
 
     def open_add_book_dialog(self):
