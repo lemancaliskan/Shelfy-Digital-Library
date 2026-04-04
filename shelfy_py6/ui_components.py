@@ -1185,7 +1185,7 @@ class BookList(QScrollArea):
         self.update_books(books)
 
     def update_books(self, books):
-        self.books = books[::-1]
+        self.books = books
         self.header.setText(get_text("books_count", count=len(self.books)))
 
         while self.grid.count():

@@ -1,13 +1,18 @@
 import sys
 import os
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, \
-    QMessageBox
+    QMessageBox, QComboBox
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QIcon
 from data_manager import JSONManager
 from assets_manager import Assets, initialize_assets, ico_path, PRIMARY_COLOR, BG_COLOR_LIGHT, BG_COLOR_DARK
 from ui_components import Sidebar, BookList, AddBookDialog, EditBookDialog, AddToListDialog, StyledButton, IconButton
 from translations import get_text, get_language, set_language
+
+def tr_sort_key(text):
+    if not isinstance(text, str):
+        return ""
+    return text.replace('I', 'ı').replace('İ', 'i').lower().replace('c', 'c1').replace('ç', 'c2').replace('g', 'g1').replace('ğ', 'g2').replace('ı', 'i1').replace('i', 'i2').replace('o', 'o1').replace('ö', 'o2').replace('s', 's1').replace('ş', 's2').replace('u', 'u1').replace('ü', 'u2')
 
 class App(QMainWindow):
     def __init__(self):
@@ -34,6 +39,7 @@ class App(QMainWindow):
         self.current_reading_status = "all"
         self.current_stock_status = "all"
         self.current_list_type = "all_list"
+        self.current_sort = "sort_newest"
 
         self.custom_lists = self.db.get_custom_lists()
 
@@ -158,14 +164,69 @@ class App(QMainWindow):
 
         self.right_layout.addWidget(self.header)
 
+        self.sort_combo = QComboBox()
+        self.sort_combo.addItem(get_text("sort_newest"), "sort_newest")
+        self.sort_combo.addItem(get_text("sort_oldest"), "sort_oldest")
+        self.sort_combo.addItem(get_text("sort_az"), "sort_az")
+        self.sort_combo.addItem(get_text("sort_za"), "sort_za")
+
+        bg_c = BG_COLOR_LIGHT if self.current_theme == "Light" else BG_COLOR_DARK
+        fg_c = "black" if self.current_theme == "Light" else "white"
+
+        try:
+            from ui_components import apply_combo_style
+            apply_combo_style(self.sort_combo, bg_c, fg_c)
+        except ImportError:
+            pass
+
+        self.sort_combo.currentIndexChanged.connect(self.on_sort_changed)
+        self.sort_combo.setFixedWidth(120)
+
         self.book_list = BookList(self, theme=self.current_theme, books=[],
                                   on_edit=self.edit_book,
                                   on_delete=self.delete_book_confirmation,
                                   on_add_to_list=self.open_add_to_list_dialog,
                                   on_author_click=self.filter_by_author,
                                   on_category_click=self.filter_by_category_from_card)
-        self.right_layout.addWidget(self.book_list)
 
+        target_widget = self.book_list.widget() if hasattr(self.book_list, 'widget') and callable(
+            self.book_list.widget) else self.book_list
+        injected = False
+
+        if hasattr(target_widget, 'header_layout'):
+            target_widget.header_layout.addStretch()
+            target_widget.header_layout.addWidget(self.sort_combo, alignment=Qt.AlignVCenter)
+            injected = True
+        elif hasattr(target_widget, 'title_layout'):
+            target_widget.title_layout.addStretch()
+            target_widget.title_layout.addWidget(self.sort_combo, alignment=Qt.AlignVCenter)
+            injected = True
+        else:
+            title_lbl = target_widget.findChild(QLabel)
+            if title_lbl and title_lbl.parentWidget() == target_widget and target_widget.layout():
+                layout = target_widget.layout()
+                idx = layout.indexOf(title_lbl)
+                if idx != -1:
+                    h_box = QHBoxLayout()
+                    layout.insertLayout(idx, h_box)
+                    layout.removeWidget(title_lbl)
+                    h_box.addStretch()
+                    h_box.addWidget(title_lbl, alignment=Qt.AlignCenter)
+                    h_box.addStretch()
+                    h_box.addWidget(self.sort_combo, alignment=Qt.AlignRight | Qt.AlignVCenter)
+                    injected = True
+
+            if not injected:
+                for layout in target_widget.findChildren(QHBoxLayout):
+                    layout.addStretch()
+                    layout.addWidget(self.sort_combo, alignment=Qt.AlignVCenter)
+                    injected = True
+                    break
+
+        if not injected and target_widget.layout():
+            target_widget.layout().insertWidget(0, self.sort_combo, alignment=Qt.AlignRight | Qt.AlignVCenter)
+
+        self.right_layout.addWidget(self.book_list)
         self.main_layout.addWidget(self.right_panel)
 
     def reset_to_dashboard(self, event=None):
@@ -203,6 +264,7 @@ class App(QMainWindow):
         self.current_subcategory = get_text("all")
         self.current_language = get_text("all")
         self.current_list_type = "all_list"
+        self.current_sort = "sort_newest"
         self.create_widgets()
         self.load_books()
 
@@ -215,6 +277,10 @@ class App(QMainWindow):
             self.current_list_type = list_name
         self.load_books()
 
+    def on_sort_changed(self, index):
+        self.current_sort = self.sort_combo.currentData()
+        self.load_books()
+
     def load_books(self):
         books = self.db.get_filtered_books(
             search_query=self.current_search_term,
@@ -223,8 +289,15 @@ class App(QMainWindow):
             language=self.current_language,
             status=self.current_reading_status,
             stock=self.current_stock_status,
-            list_type=self.current_list_type
+            list_type=self.current_list_type,
+            sort_by=self.current_sort
         )
+
+        if self.current_sort == "sort_az":
+            books = sorted(books, key=lambda b: tr_sort_key(b.get('title', '')))
+        elif self.current_sort == "sort_za":
+            books = sorted(books, key=lambda b: tr_sort_key(b.get('title', '')), reverse=True)
+
         self.book_list.update_books(books)
 
         self.sidebar.update_categories(self.get_unique_categories())
@@ -240,7 +313,7 @@ class App(QMainWindow):
         categories = list(set([b['category'] for b in books if 'category' in b and b['category']]))
         all_text = get_text("all")
         if all_text not in categories: categories.insert(0, all_text)
-        return sorted(categories, key=lambda x: (x != all_text, x))
+        return sorted(categories, key=lambda x: (x != all_text, tr_sort_key(x)))
 
     def get_unique_subcategories(self, category_name):
         data = self.db._load_data()
@@ -252,7 +325,7 @@ class App(QMainWindow):
             subcats = list(set([b.get('subcategory', '') for b in books if
                                 b.get('category') == category_name and b.get('subcategory')]))
         if all_text not in subcats: subcats.insert(0, all_text)
-        return sorted(subcats, key=lambda x: (x != all_text, x))
+        return sorted(subcats, key=lambda x: (x != all_text, tr_sort_key(x)))
 
     def get_unique_languages(self):
         data = self.db._load_data()
@@ -260,7 +333,7 @@ class App(QMainWindow):
         langs = list(set([b.get('language', '') for b in books if b.get('language')]))
         all_text = get_text("all")
         if all_text not in langs: langs.insert(0, all_text)
-        return sorted(langs, key=lambda x: (x != all_text, x))
+        return sorted(langs, key=lambda x: (x != all_text, tr_sort_key(x)))
 
     def filter_by_language(self, language_name):
         self.current_language = language_name
@@ -276,7 +349,7 @@ class App(QMainWindow):
             if c:
                 if c not in cat_dict: cat_dict[c] = set()
                 if sc: cat_dict[c].add(sc)
-        for c in cat_dict: cat_dict[c] = sorted(list(cat_dict[c]))
+        for c in cat_dict: cat_dict[c] = sorted(list(cat_dict[c]), key=tr_sort_key)
         return cat_dict
 
     def filter_by_category(self, category_name):

@@ -85,6 +85,11 @@ LANG_EN = {
     "language_label": "LANGUAGES",
     "language_req": "Language * (Select/Type)",
     "ex_lang": "E.g.: English",
+    "sort_by": "Sort By",
+    "sort_newest": "Newest First",
+    "sort_oldest": "Oldest First",
+    "sort_az": "A to Z",
+    "sort_za": "Z to A",
 }
 
 LANG_TR = {
@@ -174,6 +179,11 @@ LANG_TR = {
     "language_label": "DİLLER",
     "language_req": "Kitap Dili * (Seç/Yaz)",
     "ex_lang": "Örn: Türkçe",
+    "sort_by": "Sıralama",
+    "sort_newest": "Son Eklenen",
+    "sort_oldest": "İlk Eklenen",
+    "sort_az": "A'dan Z'ye",
+    "sort_za": "Z'den A'ya",
 }
 
 _current_lang = "TR"
