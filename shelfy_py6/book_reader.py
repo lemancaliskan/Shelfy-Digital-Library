@@ -2,11 +2,14 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget
 from PySide6.QtPdf import QPdfDocument
 from PySide6.QtPdfWidgets import QPdfView
 from PySide6.QtGui import QIcon
+from PySide6.QtCore import QPointF
 
 
 class BookReader(QWidget):
-    def __init__(self, book_path):
+    def __init__(self, book_path, book_data):
         super().__init__()
+
+        self.current_page = int(book_data.get('current_page'))
 
         # Objects
         self.setWindowTitle('Book reader')
@@ -25,6 +28,7 @@ class BookReader(QWidget):
         self.main_layout.addWidget(self.book_view)
 
         self.load_book(book_path)
+        self.book_view.pageNavigator().jump(self.current_page - 1, QPointF(0, 0), self.book_view.zoomFactor())
 
         self.setLayout(self.main_layout)
 
