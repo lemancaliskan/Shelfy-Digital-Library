@@ -1,7 +1,6 @@
 import sys
 import os
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, \
-    QMessageBox, QComboBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QMessageBox, QComboBox
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QIcon
 from data_manager import JSONManager
@@ -465,6 +464,9 @@ class App(QMainWindow):
                 title=data['title'], author=data['author'], isbn=data['isbn'], year=data['year'],
                 publisher=data['publisher'], category=data['category'], subcategory=data.get('subcategory', ''),
                 language=data['language'],
+                current_page=data['current_page'],
+                reading_source=data['reading_source'],
+                book_path=data['book_path'],
                 owned=(data['stockStatus'] == "available"), reading_status=data['readingStatus'],
                 cover_path=data['cover']
             )
