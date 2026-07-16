@@ -22,12 +22,17 @@ class BookReader(QWidget):
         self.book_view.setDocument(self.book)
 
         self.book_view.setPageMode(QPdfView.PageMode.MultiPage)
+        self.book_view.setZoomMode(QPdfView.ZoomMode.Custom)
+        self.book_view.setZoomFactor(1.5)
 
         # Desining
         self.main_layout = QVBoxLayout()
         self.main_layout.addWidget(self.book_view)
 
         self.load_book(book_path)
+        if self.current_page == 0:
+            self.book_view.pageNavigator().jump(0, QPointF(0, 0), self.book_view.zoomFactor())
+
         self.book_view.pageNavigator().jump(self.current_page - 1, QPointF(0, 0), self.book_view.zoomFactor())
 
         self.setLayout(self.main_layout)

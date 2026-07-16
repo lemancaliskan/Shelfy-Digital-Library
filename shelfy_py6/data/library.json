@@ -1,1 +1,26 @@
-
+{
+    "books": [
+        {
+            "id": "07e24f21-7663-437f-a7aa-0f4e44496e79",
+            "title": "الرجولة الكاملة",
+            "author": "خليل حنا تادرس",
+            "isbn": "2234444322344",
+            "year": null,
+            "publisher": "Noor Book",
+            "category": "الرجولة",
+            "subcategory": "",
+            "language": "العربية",
+            "owned": true,
+            "reading_status": "in_progress",
+            "cover": "data\\covers\\07e24f21-7663-437f-a7aa-0f4e44496e79.jpg",
+            "lists": [],
+            "is_favorite": false,
+            "current_page": "95",
+            "reading_source": "Laptop",
+            "book_path": "C:\\Users\\docto\\Downloads\\الرجولة الكاملة_79415_Foulabook.com_.pdf"
+        }
+    ],
+    "categories": [],
+    "authors": [],
+    "custom_lists": []
+}
