@@ -1,16 +1,18 @@
 import os
 import sys
 import requests
+from pathlib import Path
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
                                QPushButton, QScrollArea, QComboBox, QGridLayout,
                                QDialog, QFileDialog, QMessageBox, QFrame, QCheckBox,
-                               QSizePolicy, QGraphicsDropShadowEffect, QApplication)
+                               QSizePolicy, QGraphicsDropShadowEffect, QApplication, QSpinBox)
 from PySide6.QtGui import QPixmap, QIcon, QColor, QFont, QCursor, QPalette, QStandardItemModel, QStandardItem
 from PySide6.QtCore import Qt, QSize, Signal, QVariantAnimation, QEasingCurve
 from assets_manager import (Assets, PRIMARY_COLOR, BG_COLOR_DARK, ACCENT_COLOR, HOVER_COLOR, BORDER_COLOR,
                             SIDEBAR_WIDTH, CARD_WIDTH, CARD_HEIGHT, COVER_WIDTH, COVER_HEIGHT,
                             DIALOG_WIDTH, DIALOG_HEIGHT, CAT_COLORS)
 from translations import get_text
+from book_reader import BookReader
 
 
 def apply_shadow(widget, radius=15, alpha=40):
@@ -174,6 +176,81 @@ class StyledInput(QLineEdit):
                 border-color: {PRIMARY_COLOR};
             }}
         """)
+
+class NumericStyledInput(QSpinBox):
+    def __init__(self, min_range, max_range, step, parent=None):
+        super().__init__(parent)
+        self.setFixedHeight(40)
+        self.setRange(min_range, max_range)
+        self.setSingleStep(step)
+        self.setStyleSheet(f"""
+                QSpinBox {{
+                    border: 2px solid rgba(151, 223, 252, 0.3);
+                    border-radius: 12px;
+                    padding-left: 10px;
+                    padding-right: 45px; 
+                    background-color: transparent;
+                    color: black;
+                    font-size: 14px;
+                    font-weight: 500;
+                }}
+
+                QSpinBox:focus {{
+                    border-color: {PRIMARY_COLOR};
+                }}
+
+                QSpinBox:disabled {{
+                    color: #8a8a8a;
+                    border-color: rgba(151, 223, 252, 0.15);
+                }}
+
+                QSpinBox::up-button {{
+                    subcontrol-origin: border;
+                    subcontrol-position: top right;
+                    width: 34px; 
+                    height: 19px;
+                    margin: 2px 2px 0px 0px;
+                    border-top-right-radius: 10px;
+                    background-color: rgba(97, 61, 193, 0.06);
+                    border-left: 1px solid rgba(151, 223, 252, 0.3);
+                    border-bottom: 1px solid rgba(151, 223, 252, 0.3);
+                }}
+
+                QSpinBox::down-button {{
+                    subcontrol-origin: border;
+                    subcontrol-position: bottom right;
+                    width: 34px; 
+                    height: 19px;
+                    margin: 0px 2px 2px 0px;
+                    border-bottom-right-radius: 10px;
+                    background-color: rgba(97, 61, 193, 0.06);
+                    border-left: 1px solid rgba(151, 223, 252, 0.3);
+                }}
+
+                QSpinBox::up-button:hover, QSpinBox::down-button:hover {{
+                    background-color: rgba(97, 61, 193, 0.15);
+                }}
+
+                QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {{
+                    background-color: {ACCENT_COLOR};
+                }}
+
+                QSpinBox::up-button:disabled, QSpinBox::down-button:disabled {{
+                    background-color: transparent;
+                }}
+
+                QSpinBox::up-arrow {{
+                    image: url(assets/icon/up-arrow-icon.png);
+                    width: 11px;
+                    height: 11px;
+                }}
+
+                QSpinBox::down-arrow {{
+                    image: url(assets/icon/down-arrow-icon.png);
+                    width: 11px;
+                    height: 11px;
+                }}
+            """)
 
 
 class CheckableComboBox(QComboBox):
@@ -607,10 +684,11 @@ class AddBookDialog(QDialog):
         self.content = QWidget()
         self.layout = QVBoxLayout(self.content)
 
-        self.title_entry = self._add_field(get_text("book_name_req"), get_text("ex_1984"))
-        self.author_entry = self._add_field(get_text("author_req"), get_text("ex_orwell"))
-        self.publisher_entry = self._add_field(get_text("publisher_req"), get_text("ex_can"))
-        self.isbn_entry = self._add_field(get_text("isbn_req"), get_text("ex_isbn"))
+        _, self.title_entry = self._add_field(get_text("book_name_req"), get_text("ex_1984"))
+        _, self.author_entry = self._add_field(get_text("author_req"), get_text("ex_orwell"))
+        _, self.publisher_entry = self._add_field(get_text("publisher_req"), get_text("ex_can"))
+        _, self.isbn_entry = self._add_field(get_text("isbn_req"), get_text("ex_isbn"))
+        _, self.current_page = self._add_numeric_field(get_text("current_page"), 0, 5000, 1)
 
         lbl = QLabel(get_text("category_req"))
         lbl.setFont(QFont("Arial", 10, QFont.Bold))
@@ -648,14 +726,28 @@ class AddBookDialog(QDialog):
         if self.cat_combo.count() > 0:
             self._on_cat_change(self.cat_combo.currentText())
 
-        self.year_entry = self._add_field(get_text("pub_year"), get_text("ex_year"))
+        _, self.year_entry = self._add_field(get_text("pub_year"), get_text("ex_year"))
 
         self.read_status = self._add_radio_group(get_text("reading_status_req"),
                                                  [(get_text("unread"), "unread"),
                                                   (get_text("in_progress"), "in_progress"), (get_text("read"), "read")])
+        self.reading_source = self._add_radio_group(get_text("reading_source"),
+                                                   [(get_text("from_book"), "Book"),
+                                                    (get_text("from_laptop"), "Laptop")])
+        self.book_path_lbl, self.book_path = self._add_field(get_text("path"), get_text("path_place_holder"))
+        self.book_path_lbl.hide()
+        self.book_path.hide()
+
+
         self.stock_status = self._add_radio_group(get_text("stock_status_req"),
                                                   [(get_text("available"), "available"),
                                                    (get_text("borrowed"), "borrowed")])
+
+        for btn in self.reading_source:
+            if btn.property("val") == 'Laptop':
+                btn.clicked.connect(self._on_laptop_selected)
+            else:
+                btn.clicked.connect(self._on_book_selected)
 
         self._add_cover_section()
 
@@ -670,14 +762,22 @@ class AddBookDialog(QDialog):
         btn_lay.addWidget(cancel)
         btn_lay.addWidget(self.save_btn)
         main_layout.addLayout(btn_lay)
-
+        
     def _add_field(self, label, placeholder):
         lbl = QLabel(label)
         lbl.setFont(QFont("Arial", 10, QFont.Bold))
         self.layout.addWidget(lbl)
         entry = StyledInput(placeholder)
         self.layout.addWidget(entry)
-        return entry
+        return lbl, entry
+    
+    def _add_numeric_field(self, label, min_range, max_range, step=1):
+        lbl = QLabel(label)
+        lbl.setFont(QFont("Arial", 10, QFont.Bold))
+        self.layout.addWidget(lbl)
+        entry = NumericStyledInput(min_range, max_range, step)
+        self.layout.addWidget(entry)
+        return lbl, entry
 
     def _style_combo(self, combo):
         combo.setFixedHeight(40)
@@ -688,9 +788,17 @@ class AddBookDialog(QDialog):
                 if self.parent().current_theme == "Dark":
                     dropdown_bg = BG_COLOR_DARK
                     fg_color = "white"
-        except:
+        except Exception:
             pass
         apply_combo_style(combo, dropdown_bg, fg_color)
+
+    def _on_book_selected(self):
+        self.book_path_lbl.hide()
+        self.book_path.hide()
+    
+    def _on_laptop_selected(self):
+        self.book_path_lbl.show()
+        self.book_path.show()
 
     def _add_radio_group(self, label, options):
         lbl = QLabel(label)
@@ -755,7 +863,7 @@ class AddBookDialog(QDialog):
                 resp = requests.get(path, timeout=3)
                 if resp.status_code == 200:
                     pixmap.loadFromData(resp.content)
-            except:
+            except Exception:
                 pass
         elif os.path.exists(path):
             pixmap.load(path)
@@ -792,6 +900,7 @@ class AddBookDialog(QDialog):
             return
 
         read_val = next((b.property("val") for b in self.read_status if b.isChecked()), "unread")
+        reading_source_val = next((b.property("val") for b in self.reading_source if b.isChecked()), "Laptop")
         stock_val = next((b.property("val") for b in self.stock_status if b.isChecked()), "available")
 
         data = {
@@ -802,14 +911,16 @@ class AddBookDialog(QDialog):
             'category': self.cat_combo.currentText().strip(),
             'subcategory': self.subcat_combo.currentText().strip(),
             'language': self.lang_combo.currentText().strip(),
+            'current_page': str(self.current_page.value()).strip(),
+            "reading_source": reading_source_val,
+            "book_path": self.book_path.text().strip(),
             'year': year_val,
             'readingStatus': read_val,
             'stockStatus': stock_val,
             'cover': self.cover_entry.text().strip()
         }
 
-        if not all(
-                [data['title'], data['author'], data['isbn'], data['publisher'], data['category'], data['language']]):
+        if not all([data['title'], data['author'], data['isbn'], data['publisher'], data['category'], data['language']]):
             QMessageBox.critical(self, get_text("error"), get_text("req_fields_error"))
             return
 
@@ -829,6 +940,8 @@ class EditBookDialog(AddBookDialog):
         self.title_entry.setText(self.book_data.get('title', ''))
         self.author_entry.setText(self.book_data.get('author', ''))
         self.isbn_entry.setText(self.book_data.get('isbn', ''))
+        self.current_page.setValue(int(self.book_data.get('current_page', '')))
+        self.book_path.setText(self.book_data.get('book_path', ''))
         self.publisher_entry.setText(self.book_data.get('publisher', ''))
         self.cat_combo.setCurrentText(self.book_data.get('category', ''))
         self.subcat_combo.setCurrentText(self.book_data.get('subcategory', ''))
@@ -848,6 +961,14 @@ class EditBookDialog(AddBookDialog):
         for b in self.stock_status:
             b.setChecked(b.property("val") == s_stat)
 
+        rs_stat = 'Laptop' if self.book_data.get('reading_source') == 'Laptop' else 'Book'
+        for b in self.reading_source:
+            b.setChecked(b.property("val") == rs_stat)
+        if rs_stat == 'Laptop':
+            self._on_laptop_selected()
+        else:
+            self._on_book_selected()
+
     def _save(self):
         year_val = None
         if self.year_entry.text():
@@ -858,6 +979,7 @@ class EditBookDialog(AddBookDialog):
                 return
 
         read_val = next((b.property("val") for b in self.read_status if b.isChecked()), "unread")
+        reading_source_val = next((b.property("val") for b in self.reading_source if b.isChecked()), "Book")
         stock_val = next((b.property("val") for b in self.stock_status if b.isChecked()), "available")
 
         data = {
@@ -870,6 +992,9 @@ class EditBookDialog(AddBookDialog):
             "category": self.cat_combo.currentText().strip(),
             "subcategory": self.subcat_combo.currentText().strip(),
             "language": self.lang_combo.currentText().strip(),
+            "current_page": str(self.current_page.value()).strip(),
+            "reading_source": reading_source_val,
+            "book_path": self.book_path.text().strip(),
             "reading_status": read_val,
             "owned": (stock_val == "available"),
             "cover": self.cover_entry.text().strip()
@@ -1096,8 +1221,45 @@ class BookCard(QFrame):
         act_lay.addWidget(make_btn("add_list", on_add_to_list))
         act_lay.addWidget(make_btn("edit", on_edit))
         act_lay.addWidget(make_btn("remove", on_delete))
+        if self.book_data.get('reading_source') == 'Laptop':
+            act_lay.addWidget(self.open_reader_icon('assets/icon/book_reader_logo.png', self.on_book_reader))
         act_lay.addStretch()
         layout.addLayout(act_lay)
+
+    def on_book_reader(self):
+        book_path = self.book_data.get('book_path')
+        Book_Path = Path(book_path)
+
+        def book_path_error(title, text):
+            box = QMessageBox(self)
+            box.setIcon(QMessageBox.Critical)
+            box.setWindowTitle(get_text(title))
+            box.setText(get_text(text))
+            box.setStyleSheet(
+                f"QMessageBox {{ background-color: {self.window().styleSheet().split('background-color:')[1].split(';')[0].strip()} }}"
+                f"QLabel {{ color: {'white' if self.theme == 'Dark' else 'black'}; }}"
+            )
+            box.exec()
+            return
+        
+        if not book_path or not book_path.strip():
+            book_path_error('empty_path', 'no_book_path')
+            return
+        
+        elif not Book_Path.exists():
+            book_path_error('book_path_not_exist_title', 'book_path_not_exist')
+            return
+        
+        self.book_reader = BookReader(book_path, self.book_data)
+        self.book_reader.show()
+
+    def open_reader_icon(self, icon_path: str, func):
+        button = QPushButton()
+        button.setToolTip("Open Book reader")
+        button.setIcon(QIcon(icon_path))
+        button.setStyleSheet('border: none')
+        button.clicked.connect(func)
+        return button
 
     def enterEvent(self, event):
         self.raise_()
