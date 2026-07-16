@@ -1250,7 +1250,7 @@ class BookCard(QFrame):
             book_path_error('book_path_not_exist_title', 'book_path_not_exist')
             return
         
-        self.book_reader = BookReader(book_path)
+        self.book_reader = BookReader(book_path, self.book_data)
         self.book_reader.show()
 
     def open_reader_icon(self, icon_path: str, func):
