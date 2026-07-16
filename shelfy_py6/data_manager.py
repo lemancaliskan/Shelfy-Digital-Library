@@ -25,7 +25,7 @@ class JSONManager:
         try:
             with open(self.db_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except:
+        except Exception:
             return {"books": [], "custom_lists": []}
 
     def _save_data(self, data):
@@ -86,7 +86,7 @@ class JSONManager:
         return books
 
     def add_book(self, title, author, isbn, year, publisher, category, subcategory, language, owned, reading_status,
-                 cover_path=None):
+                 current_page, reading_source, book_path, cover_path=None):
         data = self._load_data()
         book_id = str(uuid.uuid4())
         final_cover_path = "default"
@@ -108,6 +108,9 @@ class JSONManager:
             "year": year,
             "publisher": publisher,
             "category": category,
+            "current_page": current_page,
+            "book_path": book_path,
+            "reading_source": reading_source,
             "subcategory": subcategory,
             "language": language,
             "owned": owned,
@@ -130,7 +133,7 @@ class JSONManager:
                 if os.path.exists(full_img_path):
                     try:
                         os.remove(full_img_path)
-                    except:
+                    except Exception:
                         pass
 
             data["books"] = [b for b in data["books"] if b['id'] != book_id]

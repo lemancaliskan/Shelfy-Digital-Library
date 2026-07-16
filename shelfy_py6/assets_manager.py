@@ -72,6 +72,7 @@ class Assets:
                 "add_list": "add_list.png",
                 "edit": "edit.png",
                 "remove": "remove.png",
+                "book_reader": "book_reader_logo.png",
                 "light_m" : "light_mode.png",
                 "dark_m" : "dark_mode.png",
                 "language": "language.png",

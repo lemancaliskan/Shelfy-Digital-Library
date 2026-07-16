@@ -61,7 +61,8 @@ pip install -r requirements.txt
 
 # Run the application (Preferred Version)
 To run the latest PySide6 version (Recommended):
-python shelfy_pyside/main.py
+cd shelfy_py6
+python main.py
 
 # Run the application (CustomTkinter Version)
 To run the CustomTkinter version:
